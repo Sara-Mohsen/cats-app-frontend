@@ -1,0 +1,263 @@
+.navbar {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(90%, 1100px);
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 34px;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 22px;
+
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px rgba(255, 255, 255, 0.45);
+
+  z-index: 100;
+
+  transition: all 0.35s ease;
+}
+
+.navbar.scrolled {
+  height: 62px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  text-decoration: none;
+
+  transition: 0.35s;
+}
+
+.logo img {
+  width: 42px;
+  transition: 0.35s;
+}
+
+.logo span {
+  color: white;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+
+  transition: 0.35s;
+}
+
+.logo:hover {
+  transform: scale(1.04);
+}
+
+.logo:hover img {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.logo:hover span {
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+}
+
+.nav-links {
+
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+
+  font-weight: 500;
+
+  transition: 0.3s ease;
+}
+
+.nav-links svg {
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: white;
+  transform: translateY(-3px);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.45);
+}
+
+.nav-links a:hover svg {
+  transform: scale(1.12);
+}
+
+
+.create-btn {
+     
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .75rem 1.6rem;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ffd1dc,#ff8ad7, #ef72ea);
+    box-shadow: 0 8px 25px rgba(236, 116, 255, .4);
+    transition: .35s ease;
+}
+
+
+.create-btn:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 18px 45px rgba(236, 116, 255, 0.55);
+
+  filter: brightness(1.05);
+}
+
+.menu-btn {
+  display: none;
+
+  background: none;
+  border: none;
+
+  color: white;
+
+  cursor: pointer;
+}
+.menu-btn:hover {
+  transform: scale(1.09);
+}
+
+.nav-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0.75rem 0 1rem;
+}
+
+
+.mobile-create {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  align-self: center;
+
+  width: 70%;
+  max-width: 220px;
+
+  margin-top: 1rem;
+
+  padding: 0.9rem 1.2rem;
+
+  border-radius: 16px;
+
+  background: linear-gradient(135deg, #ff93d6, #f06ee9, #d783ff);
+
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+
+  box-shadow: 0 12px 30px rgba(236, 116, 255, 0.35);
+
+  transition: 0.3s;
+}
+
+.mobile-create:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+/* Tablet */
+
+@media (max-width: 780px) {
+  .navbar {
+    width: 95%;
+    padding: 0 20px;
+  }
+
+  .logo span {
+    font-size: 1.1rem;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .create-btn {
+    display: none;
+  }
+
+  .nav-links {
+    position: absolute;
+
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 90%;
+
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    display: none;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 1.5rem;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .navbar {
+    width: 95%;
+    padding: 14px 18px;
+  }
+
+  .logo span {
+    display: none;
+  }
+
+  .mobile-create {
+    width: 70%;
+    max-width: 220px;
+    margin: 1rem auto 0;
+  }
+}
+
+
+
