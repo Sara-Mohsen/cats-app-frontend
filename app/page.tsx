@@ -1,35 +1,27 @@
+import Link from "next/link";
 
 const Home = () => {
   return (
-
-    
     <section className="hero">
+      <div className="hero-content">
+        <h1 className="hero-title">Welcome to our Cats App</h1>
 
-  <div className="hero-content">
+        <p className="hero-description">
+          A Small Network That All Cats Lovers Need!!
+        </p>
 
-    <h1 className="hero-title">
-      Welcome to our Cats App
-    </h1>
+        <div className="hero-buttons" >
+          <Link href="/login">
+            <button className="btn-primary">Sign up</button>
+          </Link>
 
-    <p className="hero-description">
-      A Small Network That All Cats Lovers Need!!
-    </p>
+          <Link href="/home">
+            <button className="btn-secondary">Veiw Cats</button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
 
-    <div className="hero-buttons">
-      <button className="btn-primary">
-        Sign up
-      </button>
-
-      <button className="btn-secondary">
-        Veiw Cats
-      </button>
-    </div>
-
-  </div>
-
-</section>
-  )
-}
-
-export default Home
-
+export default Home;

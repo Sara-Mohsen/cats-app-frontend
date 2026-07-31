@@ -31,7 +31,7 @@ export default function Navbar() {
       </Link>
 
       <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
-        <Link href="/">Home</Link>
+        <Link href="/home">Home</Link>
         <Link href="/favorite">Favorite</Link>
         <Link href="/profile">Profile</Link>
 
