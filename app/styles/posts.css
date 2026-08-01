@@ -1,0 +1,27 @@
+.posts-section {
+  position: relative;
+  z-index: 10;
+  margin-top: -120px;
+  padding-bottom: 120px;
+}
+
+.posts-container {
+  width: min(1200px, 90%);
+  margin: auto;
+}
+
+.posts-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 40px;
+    text-shadow:
+    0 4px 18px rgba(0,0,0,.18),
+    0 2px 8px rgba(255,255,255,.25);
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}

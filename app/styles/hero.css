@@ -49,3 +49,9 @@
   gap: 16px;
   margin-top: 40px;
 }
+
+.posts-section {
+  margin-top: -80px;
+  position: relative;
+  z-index: 20;
+}

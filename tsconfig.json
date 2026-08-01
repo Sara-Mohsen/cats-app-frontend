@@ -29,6 +29,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "components/Grainient.tsx"  ],
+,   "**/*.cts"
+  ],
   "exclude": ["node_modules"]
 }

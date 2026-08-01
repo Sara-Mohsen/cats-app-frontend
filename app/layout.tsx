@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        <div className="absolute inset-0 top-0 z-[-1] min-h-screen">
+        <div className="fixed inset-0 -z-10">
           <Grainient
             color1="#e0c1e0"
             color2="#dda6c1"
