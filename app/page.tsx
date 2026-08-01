@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Posts from "@/components/Posts";
-import Grainient from "@/components/Grainient";
+import ResqPost from "@/components/ResqPost";
 
 const titles = [
   "Welcome to our Cats Gallery",
@@ -56,6 +56,7 @@ export default function Home() {
       </div>
     </section>
     <Posts />
+    <ResqPost />
     </main>
     
   );

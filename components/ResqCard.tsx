@@ -58,7 +58,7 @@ export default function Cards({ id, image, name, breed, age }: CardProps) {
         text-gray-700 font-extrabold
         transition-all
         duration-300
-        group-hover:text-pink-400"
+        group-hover:text-red-500"
         >
         {name}
         </h3>

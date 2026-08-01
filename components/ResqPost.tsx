@@ -1,15 +1,13 @@
-import Cards from "./Cards";
-import { pics } from "../lib/data";
-import { Sparkles } from "lucide-react";
-
+import Cards from "./ResqCard";
+import { pics } from "../lib/datar";
+import { AlertTriangleIcon } from "lucide-react";
 export default function Posts() {
   return (
     <section className="posts-section">
       <div className="posts-container">
-        <h2 className="posts-title 
-        text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
-          <Sparkles className="w-9 h-9 text-pink-300" />
-          Latest Posts
+        <h2 className="postq-title Albert_Sans text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
+        <AlertTriangleIcon className="w-9 h-9 text-red-300" />
+          Rescue Cats
           </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
