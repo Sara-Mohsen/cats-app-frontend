@@ -1,19 +1,23 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import Image from 'next/image';
-import Link from 'next/link'; // 👈 استيراد Link للتنقل بين الصفحات
-import { User, Lock, Eye, EyeOff, ArrowRight, Cat } from 'lucide-react';
 
-interface LoginFormData {
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import Image from "next/image";
+import { User, AtSign, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
+
+interface SignupFormData {
+  fullName: string;
   username: string;
+  email: string;
   password: string;
 }
 
-const LoginPage: React.FC = () => {
+export default function SignupPage() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [formData, setFormData] = useState<LoginFormData>({
-    username: '',
-    password: '',
+  const [formData, setFormData] = useState<SignupFormData>({
+    fullName: "",
+    username: "",
+    email: "",
+    password: "",
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -26,52 +30,90 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    console.log('Logging in with:', formData);
+    console.log("Signing up with:", formData);
   };
 
   return (
     <div className="min-h-screen w-full bg-linear-to-br from-pink-200 via-pink-100 to-purple-200 flex items-center justify-center p-4">
+      {/* Signup Card */}
       <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all">
+        {/* Top Decorative Gradient Bar */}
         <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
+
         <div className="p-8 sm:p-10 flex flex-col items-center">
-          
+          {/* Logo Container */}
           <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center shadow-inner mb-4 border border-pink-100">
             <Image
               src="/images/logo.png"
-              alt="Cats Library"
+              alt="Cats Gallery Logo"
               width={60}
               height={60}
             />
           </div>
 
+          {/* Titles */}
           <h2 className="text-2xl font-bold text-pink-900 mb-1">Cats Gallery</h2>
-          <p className="text-sm text-pink-600/80 mb-8 text-center font-medium">
-           Welcome back! Please enter your details to log in and explore our adorable cat collection.
+          <p className="text-sm text-pink-600/80 mb-6 text-center font-medium">
+            Create an account to join our adorable cat community!
           </p>
 
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
-            
+          {/* Signup Form */}
+          <form onSubmit={handleSubmit} className="w-full space-y-3.5">
+            {/* 1. Full Name */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-pink-400">
                 <User size={19} />
               </div>
               <input
                 type="text"
-                name="username"
-                value={formData.username}
+                name="fullName"
+                value={formData.fullName}
                 onChange={handleChange}
-                placeholder="Username or Email"
+                placeholder="Full Name"
                 className="w-full pl-11 pr-4 py-3 bg-white/80 border border-pink-200 rounded-xl text-gray-700 placeholder-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition text-sm"
                 required
               />
             </div>
 
+            {/* 2. Username (Unique) */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-pink-400">
+                <AtSign size={19} />
+              </div>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Username"
+                className="w-full pl-11 pr-4 py-3 bg-white/80 border border-pink-200 rounded-xl text-gray-700 placeholder-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition text-sm"
+                required
+              />
+            </div>
+
+            {/* 3. Email */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-pink-400">
+                <Mail size={19} />
+              </div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email Address"
+                className="w-full pl-11 pr-4 py-3 bg-white/80 border border-pink-200 rounded-xl text-gray-700 placeholder-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition text-sm"
+                required
+              />
+            </div>
+
+            {/* 4. Password */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-pink-400">
                 <Lock size={19} />
               </div>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -88,44 +130,17 @@ const LoginPage: React.FC = () => {
               </button>
             </div>
 
+            {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full mt-2 py-3.5 px-4 bg-linear-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2"
+              className="w-full mt-4 py-3.5 px-4 bg-linear-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2"
             >
-              <ArrowRight size={18} />
-              <span>Log In</span>
+              <UserPlus size={18} />
+              <span>Sign Up</span>
             </button>
           </form>
-
-          {/* 👈 النص والرابط الجديد لإنشاء حساب */}
-          <p className="mt-4 text-xs text-pink-600 font-medium">
-            Don&apos;t have an account?{' '}
-            <Link 
-              href="/sign" 
-              className="font-bold text-purple-400 hover:text-purple-800 underline transition-colors"
-            >
-              Sign Up
-            </Link>
-          </p>
-
-          <div className="w-full flex items-center my-6">
-            <div className="grow border-t border-pink-100"></div>
-            <span className="px-3 text-xs text-pink-400 font-medium">Or</span>
-            <div className="grow border-t border-pink-100"></div>
-          </div>
-
-          <Link
-            href="/"
-            className="w-full py-3.5 px-4 bg-white/40 hover:bg-white/60 border border-pink-200/60 text-pink-700 font-semibold rounded-2xl backdrop-blur-sm shadow-sm hover:shadow-md transform active:scale-[0.98] transition flex items-center justify-center gap-2 text-sm text-center"
-          >
-            <Cat size={17} className="text-pink-400" />
-            <span>Explore Cats Without Registration</span>
-          </Link>
-
         </div>
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

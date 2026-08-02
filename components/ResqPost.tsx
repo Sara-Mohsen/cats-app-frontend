@@ -6,7 +6,7 @@ export default function Posts() {
     <section className="posts-section">
       <div className="posts-container">
         <h2 className="postq-title Albert_Sans text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
-        <Siren className="w-10 h-10 text-red-300" />
+        <Siren className="w-[1em] h-[1em] md:w-10 md:h-10 text-red-300" />
           Rescue Cats
           </h2>
 

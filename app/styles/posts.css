@@ -35,3 +35,11 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
+
+.posts-title,
+.postq-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem); 
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px; 
+}

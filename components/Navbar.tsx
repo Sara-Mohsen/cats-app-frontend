@@ -10,7 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const hideNavbarPaths = ["/login"];
+  const hideNavbarPaths = ["/login", "/sign"];
   const shouldHideNavbar = hideNavbarPaths.includes(pathname);
 
   useEffect(() => {

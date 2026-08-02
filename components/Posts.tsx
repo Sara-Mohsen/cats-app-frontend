@@ -8,7 +8,8 @@ export default function Posts() {
       <div className="posts-container">
         <h2 className="posts-title 
         text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
-          <Sparkles className="w-9 h-9 text-pink-300" />
+          <Sparkles className="w-[1em] h-[1em] text-pink-300" />
+
           Latest Posts
           </h2>
 
