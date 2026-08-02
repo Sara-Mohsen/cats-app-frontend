@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Posts from "@/components/Posts";
 import ResqPost from "@/components/ResqPost";
 
@@ -15,6 +15,7 @@ const titles = [
 
 export default function Home() {
   const [index, setIndex] = useState(0);
+  const latestPostsRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,6 +24,13 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const scrollToLatestPosts = () => {
+    latestPostsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   return (
     <main className="container mx-auto px-4">
@@ -49,8 +57,10 @@ export default function Home() {
             <button className="btn-primary">Sign up</button>
           </Link>
 
-          <Link href="/home">
-            <button className="btn-secondary">Veiw Cats</button>
+          <Link href="#latest-posts" ref={latestPostsRef}>
+            <button className="btn-secondary" onClick={scrollToLatestPosts}>
+              View Cats
+            </button>
           </Link>
         </div>
       </div>

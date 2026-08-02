@@ -1,12 +1,12 @@
 import Cards from "./ResqCard";
 import { pics } from "../lib/datar";
-import { AlertTriangleIcon } from "lucide-react";
+import { Siren } from "lucide-react";
 export default function Posts() {
   return (
     <section className="posts-section">
       <div className="posts-container">
         <h2 className="postq-title Albert_Sans text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
-        <AlertTriangleIcon className="w-9 h-9 text-red-300" />
+        <Siren className="w-10 h-10 text-red-300" />
           Rescue Cats
           </h2>
 

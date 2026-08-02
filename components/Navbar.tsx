@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const hideNavbarPaths = ["/login"];
+  const shouldHideNavbar = hideNavbarPaths.includes(pathname);
 
   useEffect(() => {
     const onScroll = () => {
@@ -18,6 +22,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  if (shouldHideNavbar) return null;
   return (
     <header className={scrolled ? "navbar scrolled" : "navbar"}>
       <Link href="/" className="logo">

@@ -4,7 +4,7 @@ import { Sparkles } from "lucide-react";
 
 export default function Posts() {
   return (
-    <section className="posts-section">
+    <section className="posts-section" id="latest-posts">
       <div className="posts-container">
         <h2 className="posts-title 
         text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2">
