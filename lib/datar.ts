@@ -5,6 +5,12 @@ export const pics = [
     breed: "Siberian",
     age: 1,
     image: "/images/Cats/pic4.png",
+     personality:
+      "Milo is a calm, sweet, and affectionate cat. He enjoys lounging in sunny spots, playing with gentle toys, and being petted by his family.",
+    gender: "Male",
+    isNeutered: true,
+    isVaccinated: true,
+    city: "Makkah",
   },
   {
     id: 2,

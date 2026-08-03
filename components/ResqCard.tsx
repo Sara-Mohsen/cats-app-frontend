@@ -60,7 +60,7 @@ export default function Cards({ id, image, name, breed, age }: CardProps) {
         duration-300
         group-hover:text-red-500"
         >
-        {name}
+        {name} 
         </h3>
         
         <div className="flex items-center gap-5 mt-2 text-sm text-gray-500">
