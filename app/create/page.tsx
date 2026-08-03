@@ -44,16 +44,19 @@ export default function CreatePostPage() {
   const [activeTab, setActiveTab] = useState<TabType>("normal");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Validation state for age
+  const [ageError, setAgeError] = useState<string>("");
+
   // Normal & Adoption Form State
   const [catData, setCatData] = useState({
     name: "",
     age: "",
-    breed: BREEDS[0],
+    breed: "", // بداية فارغة ليتم اختيارها
     personality: "",
     gender: "Male" as "Male" | "Female",
     isNeutered: false,
     isVaccinated: false,
-    city: CITIES[0],
+    city: "", // بداية فارغة ليتم اختيارها
     phoneNumber: "", // للتبني فقط
   });
 
@@ -63,9 +66,30 @@ export default function CreatePostPage() {
     rescueId: `Rescue #${Math.floor(100 + Math.random() * 900)}`, // ID تلقائي
     hasInjury: false,
     injuryDescription: "",
-    city: CITIES[0],
+    city: "", // بداية فارغة ليتم اختيارها
     phoneNumber: "",
   });
+
+  // Handle Age Input Change with Error Handling
+  const handleAgeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setCatData({ ...catData, age: val });
+
+    if (val !== "") {
+      const numAge = Number(val);
+      if (isNaN(numAge)) {
+        setAgeError("Please enter a valid number");
+      } else if (numAge > 30) {
+        setAgeError("Age cannot be greater than 30 years");
+      } else if (numAge < 0) {
+        setAgeError("Age cannot be negative");
+      } else {
+        setAgeError("");
+      }
+    } else {
+      setAgeError("");
+    }
+  };
 
   // Handle Image Upload
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +105,16 @@ export default function CreatePostPage() {
   // Submit Handler
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    // Check age logic before submitting
+    if (activeTab === "normal" || activeTab === "adoption") {
+      const numAge = Number(catData.age);
+      if (numAge > 30 || numAge < 0 || isNaN(numAge)) {
+        setAgeError("Age must be between 0 and 30 years");
+        return;
+      }
+    }
+
     if (activeTab === "rescue") {
       console.log("Rescue Post Submitted:", { ...rescueData, imagePreview });
     } else {
@@ -116,7 +150,7 @@ export default function CreatePostPage() {
 
         <div className="p-4 sm:p-6 md:p-8">
           
-          {/* 1. Tabs Navigation / شريط الخيارات الثلاثة */}
+          {/* 1. Tabs Navigation */}
           <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-pink-50/80 rounded-2xl border border-pink-100 mb-6">
             <button
               type="button"
@@ -169,7 +203,7 @@ export default function CreatePostPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* 2. Image Upload (مشترك بين الكل) */}
+            {/* 2. Image Upload */}
             <div>
               <label className="block text-xs font-bold text-pink-900 uppercase tracking-wider mb-2">
                 Cat Photo *
@@ -221,16 +255,27 @@ export default function CreatePostPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-                      Age *
+                      Age (Years) *
                     </label>
                     <input
-                      type="text"
+                      type="number"
+                      min={0}
+                      max={30}
                       value={catData.age}
-                      onChange={(e) => setCatData({ ...catData, age: e.target.value })}
-                      placeholder="e.g. 2 Years"
-                      className="w-full px-4 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      onChange={handleAgeChange}
+                      placeholder="e.g. 2"
+                      className={`w-full px-4 py-2.5 bg-white/80 border rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 ${
+                        ageError
+                          ? "border-red-400 focus:ring-red-400"
+                          : "border-pink-200 focus:ring-pink-400"
+                      }`}
                       required
                     />
+                    {ageError && (
+                      <p className="text-red-500 text-xs mt-1 font-semibold">
+                        {ageError}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -238,13 +283,17 @@ export default function CreatePostPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-                      Breed  *
+                      Breed *
                     </label>
                     <select
                       value={catData.breed}
                       onChange={(e) => setCatData({ ...catData, breed: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      required
                     >
+                      <option value="" disabled hidden>
+                        Choose Breed
+                      </option>
                       {BREEDS.map((b) => (
                         <option key={b} value={b}>
                           {b}
@@ -255,13 +304,17 @@ export default function CreatePostPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-                      City  *
+                      City *
                     </label>
                     <select
                       value={catData.city}
                       onChange={(e) => setCatData({ ...catData, city: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      required
                     >
+                      <option value="" disabled hidden>
+                        Choose City
+                      </option>
                       {CITIES.map((c) => (
                         <option key={c} value={c}>
                           {c}
@@ -274,7 +327,7 @@ export default function CreatePostPage() {
                 {/* Personality */}
                 <div>
                   <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-                    Personality 
+                    Personality
                   </label>
                   <textarea
                     rows={2}
@@ -364,7 +417,7 @@ export default function CreatePostPage() {
                   </div>
                 </div>
 
-                {/* Phone Number (خيار إضافي مخصص للتبني فقط) */}
+                {/* Phone Number (للتبني فقط) */}
                 {activeTab === "adoption" && (
                   <div>
                     <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
@@ -400,13 +453,17 @@ export default function CreatePostPage() {
                 {/* City */}
                 <div>
                   <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-                    City  *
+                    City *
                   </label>
                   <select
                     value={rescueData.city}
                     onChange={(e) => setRescueData({ ...rescueData, city: e.target.value })}
                     className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    required
                   >
+                    <option value="" disabled hidden>
+                      Choose City
+                    </option>
                     {CITIES.map((c) => (
                       <option key={c} value={c}>
                         {c}

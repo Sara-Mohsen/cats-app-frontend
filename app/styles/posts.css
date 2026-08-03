@@ -20,24 +20,13 @@
     0 2px 8px rgba(255,255,255,.25);
 }
 
-.postq-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 40px;
-    text-shadow:
-    0 4px 18px rgba(0,0,0,.18),
-    0 2px 8px rgba(255,255,255,.25);
-}
-
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
 
-.posts-title,
-.postq-title {
+.posts-title{
     font-size: clamp(1.5rem, 4vw, 2.5rem); 
     font-weight: bold;
     color: #fff;

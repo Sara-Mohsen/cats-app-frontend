@@ -1,4 +1,3 @@
-// lib/data.ts
 
 export interface CatDetails {
   id: number | string;
@@ -12,7 +11,7 @@ export interface CatDetails {
   isVaccinated: boolean;
   city: string;
 }
-
+ 
 export const pics: CatDetails[] = [
   {
     id: 1,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
@@ -9,9 +9,11 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null); 
+
   const pathname = usePathname();
   const hideNavbarPaths = ["/login", "/sign", "/details", "/create", "/profile", "/favorite"];
-  const shouldHideNavbar = hideNavbarPaths.includes(pathname) || pathname.startsWith("/details/");
+  const shouldHideNavbar = hideNavbarPaths.includes(pathname) || pathname.startsWith("/details/",) || pathname.startsWith("/rescue/") || pathname.startsWith("/adopt/");
 
   useEffect(() => {
     const onScroll = () => {
@@ -22,10 +24,27 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   if (shouldHideNavbar) return null;
+
   return (
-    <header className={scrolled ? "navbar scrolled" : "navbar"}>
-      <Link href="/" className="logo">
+    <header ref={navRef} className={scrolled ? "navbar scrolled" : "navbar"}>
+      <Link href="/" className="logo" onClick={() => setMenuOpen(false)}>
         <Image
           src="/images/logo.png"
           alt="Cats Library"
