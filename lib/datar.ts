@@ -7,6 +7,7 @@ export interface RescueDetails {
   city: string;
   isInjured: boolean;
   injuryDescription?: string;
+  isRescued: boolean;
   phone: string;
 }
 
@@ -19,6 +20,7 @@ export const rescuePics: RescueDetails[] = [
     injuryDescription:
       "Lucy has a slight injury on her back leg and needs urgent veterinary care and shelter.",
     phone: "+966 50 123 4567",
+    isRescued: false,
     formattedId: "Rescue #01",
   },
   {
@@ -27,6 +29,7 @@ export const rescuePics: RescueDetails[] = [
     city: "Riyadh",
     isInjured: false,
     phone: "+966 55 987 6543",
+    isRescued: false,
     formattedId: "Rescue #02",
   },
   {
@@ -37,6 +40,7 @@ export const rescuePics: RescueDetails[] = [
     injuryDescription:
       "Simba is exhausted, suffering from eye inflammation, and requires immediate medical treatment.",
     phone: "+966 54 321 9876",
+    isRescued: true,
     formattedId: "Rescue #03",
   },
 ];

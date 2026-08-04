@@ -13,13 +13,7 @@ export default function RescuePost() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rescuePics.map((post) => (
-            <RescueCard
-              key={post.id}
-              id={post.id}
-              image={post.image}
-              city={post.city}
-              isInjured={post.isInjured}
-            />
+            <RescueCard key={post.id} {...post} />
           ))}
         </div>
       </div>

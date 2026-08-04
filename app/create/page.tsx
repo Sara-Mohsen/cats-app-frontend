@@ -176,8 +176,8 @@ export default function CreatePostPage() {
               }}
               className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 ${
                 activeTab === "rescue"
-                  ? "bg-white text-red-500 shadow-sm border border-red-100"
-                  : "text-gray-500 hover:text-red-500"
+                  ? "bg-white text-pink-600 shadow-sm border border-pink-100"
+                  : "text-gray-500 hover:text-pink-600"
               }`}
             >
               <AlertCircle size={16} />
@@ -192,8 +192,8 @@ export default function CreatePostPage() {
               }}
               className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 ${
                 activeTab === "adoption"
-                  ? "bg-white text-purple-600 shadow-sm border border-purple-100"
-                  : "text-gray-500 hover:text-purple-600"
+                  ? "bg-white text-pink-600 shadow-sm border border-pink-100"
+                  : "text-gray-500 hover:text-pink-600"
               }`}
             >
               <HeartHandshake size={16} />
@@ -443,9 +443,9 @@ export default function CreatePostPage() {
             {activeTab === "rescue" && (
               <>
                 {/* Auto Generated ID Badge */}
-                <div className="flex items-center justify-between bg-red-50 p-3 rounded-2xl border border-red-100">
-                  <span className="text-xs font-bold text-red-900 uppercase">Rescue Case ID:</span>
-                  <span className="text-xs font-extrabold text-red-600 bg-white px-3 py-1 rounded-xl border border-red-200">
+                <div className="flex items-center justify-between bg-purple-50 p-3 rounded-2xl border border-purple-100">
+                  <span className="text-xs font-bold text-purple-900 uppercase">Rescue Case ID:</span>
+                  <span className="text-xs font-extrabold text-purple-700 bg-white px-3 py-1 rounded-xl border border-purple-200">
                     {rescueData.rescueId}
                   </span>
                 </div>
@@ -481,7 +481,7 @@ export default function CreatePostPage() {
                         type="button"
                         onClick={() => setRescueData({ ...rescueData, hasInjury: true })}
                         className={`px-3 py-1 rounded-xl text-xs font-medium flex items-center gap-1 ${
-                          rescueData.hasInjury ? "bg-red-500 text-white" : "bg-white text-gray-500 border border-pink-200"
+                          rescueData.hasInjury ? "bg-pink-500 text-white" : "bg-white text-gray-500 border border-pink-200"
                         }`}
                       >
                         <Check size={14} /> Yes
@@ -501,7 +501,7 @@ export default function CreatePostPage() {
                   {/* Description field if Injured = True */}
                   {rescueData.hasInjury && (
                     <div className="pt-2 border-t border-pink-100">
-                      <label className="block text-xs font-bold text-red-900 uppercase mb-1.5">
+                      <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
                         Injury Description *
                       </label>
                       <textarea
@@ -511,7 +511,7 @@ export default function CreatePostPage() {
                           setRescueData({ ...rescueData, injuryDescription: e.target.value })
                         }
                         placeholder="Describe the injury..."
-                        className="w-full p-3 bg-white border border-red-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"
+                        className="w-full p-3 bg-white border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none"
                         required
                       />
                     </div>

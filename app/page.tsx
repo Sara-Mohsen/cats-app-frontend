@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import Posts from "@/components/Posts";
 import ResqPost from "@/components/ResqPost";
 import AdPost from "@/components/AdPost";
+import Footer from "@/components/Footer";
 
 const titles = [
   "Welcome to our Cats Gallery",
@@ -69,6 +70,7 @@ export default function Home() {
     <Posts />
     <ResqPost />
     <AdPost />
+    <Footer />
     </main>
     
   );

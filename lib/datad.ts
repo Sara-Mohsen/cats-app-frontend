@@ -1,4 +1,3 @@
-
 export interface CatDetails {
   id: number | string;
   name: string;
@@ -9,6 +8,7 @@ export interface CatDetails {
   gender: "Male" | "Female";
   isNeutered: boolean;
   isVaccinated: boolean;
+  isAdopted: boolean; // 👈 إضافة خاصية التبني (true / false)
   city: string;
   phone?: string; // Optional property for phone number
 }
@@ -25,6 +25,7 @@ export const pics: CatDetails[] = [
     gender: "Male",
     isNeutered: true,
     isVaccinated: true,
+    isAdopted: true, // 👈 متبنى
     city: "Riyadh",
     phone: "0501234567",
   },
@@ -39,6 +40,7 @@ export const pics: CatDetails[] = [
     gender: "Male",
     isNeutered: true,
     isVaccinated: false,
+    isAdopted: false, // 👈 غير متبنى
     city: "Jeddah",
     phone: "0509876543",
   },
@@ -53,6 +55,7 @@ export const pics: CatDetails[] = [
     gender: "Female",
     isNeutered: false,
     isVaccinated: false,
+    isAdopted: false, // 👈 غير متبنى
     city: "Abha",
     phone: "0505555555",
   },

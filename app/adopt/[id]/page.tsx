@@ -21,7 +21,9 @@ import {
   MessageCircle,
   Send,
   Sparkles,
-  Phone, // 👈 تم استيراد أيقونة الهاتف
+  Phone,
+  PartyPopper, // 👈 تم إضافة أيقونة الاحتفال
+  CheckCircle2, // 👈 تم إضافة أيقونة خيار Adopted
 } from "lucide-react";
 
 export default function CatDetailsPage({
@@ -66,6 +68,13 @@ export default function CatDetailsPage({
     if (confirm("Are you sure you want to delete this post?")) {
       console.log("Delete post:", cat.id);
     }
+  };
+
+  // 👈 دالة تحديد التبني من القائمة
+  const handleMarkAsAdopted = () => {
+    setShowMenu(false);
+    console.log("Mark as Adopted:", cat.id);
+    alert(`${cat.name} has been marked as adopted! 🎉`);
   };
 
   const handleAdopt = () => {
@@ -130,7 +139,7 @@ export default function CatDetailsPage({
                     onClick={() => setShowMenu(false)}
                   />
 
-                  <div className="absolute top-12 right-0 z-20 w-40 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute top-12 right-0 z-20 w-44 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                     <button
                       onClick={handleEdit}
                       className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-700 flex items-center gap-2.5 transition"
@@ -138,9 +147,19 @@ export default function CatDetailsPage({
                       <Pencil size={16} className="text-pink-400" />
                       <span>Edit Post</span>
                     </button>
+
+                    {/* 👈 الخيار الثالث الجديد */}
+                    <button
+                      onClick={handleMarkAsAdopted}
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-purple-700 hover:bg-purple-50 flex items-center gap-2.5 transition"
+                    >
+                      <CheckCircle2 size={16} className="text-purple-500" />
+                      <span>Mark as Adopted</span>
+                    </button>
+
                     <button
                       onClick={handleDelete}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition"
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition border-t border-pink-50 mt-1 pt-2.5"
                     >
                       <Trash2 size={16} className="text-red-500" />
                       <span>Delete Post</span>
@@ -161,6 +180,15 @@ export default function CatDetailsPage({
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 priority
               />
+
+              {/* 👈 بادج Adopted البنفسجي أقصى يسار الصورة مع أيقونة الاحتفال */}
+              {cat.isAdopted && (
+                <span className="absolute top-4 left-4 bg-purple-200/90 backdrop-blur-md text-purple-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-purple-300/40 flex items-center gap-1.5 animate-in fade-in duration-300">
+                  <PartyPopper size={15} className="text-purple-800" />
+                  <span>Adopted</span>
+                </span>
+              )}
+
               <span className="absolute top-4 right-4 bg-white/80 backdrop-blur-md text-pink-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm border border-white">
                 {cat.gender === "Male" ? "♂ Male" : "♀ Female"}
               </span>
@@ -254,7 +282,6 @@ export default function CatDetailsPage({
                 </div>
               </div>
 
-              {/* 👈 إضافة خانة رقم الهاتف */}
               {cat.phone && (
                 <div className="bg-white/70 p-3.5 rounded-2xl border border-pink-100 flex items-center gap-3 col-span-2 sm:col-span-3">
                   <div className="p-2.5 bg-pink-100/60 rounded-xl text-pink-600">
@@ -282,12 +309,18 @@ export default function CatDetailsPage({
               </p>
             </div>
 
+            {/* 👈 زر التبني الديناميكي */}
             <button
               onClick={handleAdopt}
-              className="w-full py-4 px-6 bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-base rounded-2xl shadow-lg hover:shadow-xl transform active:scale-[0.98] transition flex items-center justify-center gap-2"
+              disabled={cat.isAdopted}
+              className={`w-full py-4 px-6 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2 ${
+                cat.isAdopted
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                  : "bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white hover:shadow-xl transform active:scale-[0.98]"
+              }`}
             >
               <Sparkles size={20} />
-              <span>Adopt {cat.name}</span>
+              <span>{cat.isAdopted ? "Already Adopted" : `Adopt ${cat.name}`}</span>
             </button>
           </div>
         </div>

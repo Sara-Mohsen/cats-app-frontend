@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PawPrint, Cake, MapPin, Heart } from "lucide-react";
+import { PawPrint, Cake, MapPin, Heart, PartyPopper } from "lucide-react"; // 👈 استيراد PartyPopper
 
 type AdCardProps = {
   id: number | string;
@@ -11,8 +11,9 @@ type AdCardProps = {
   name: string;
   breed: string;
   age: string | number;
-  city: string; // 👈 إضافة المدينة للـ Props
-  phone?: string; // 👈 إضافة رقم الهاتف للـ Props
+  city: string;
+  phone?: string;
+  isAdopted?: boolean; // 👈 إضافة خاصية التبني
 };
 
 export default function AdCards({
@@ -22,6 +23,7 @@ export default function AdCards({
   breed,
   age,
   city,
+  isAdopted = false, // 👈 القيمة الافتراضية false
 }: AdCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -46,6 +48,14 @@ export default function AdCards({
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
+
+          {/* 👈 بادج Adopted البنفسجي أعلى يسار الصورة */}
+          {isAdopted && (
+            <span className="absolute top-3.5 left-3.5 bg-purple-200/90 backdrop-blur-md text-purple-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-purple-300/40 flex items-center gap-1.5 z-10">
+              <PartyPopper size={14} className="text-purple-800" />
+              <span>Adopted</span>
+            </span>
+          )}
 
           {/* زر المفضلة (القلب) أعلى يمين الصورة */}
           <button

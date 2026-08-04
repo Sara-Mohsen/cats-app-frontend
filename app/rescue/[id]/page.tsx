@@ -17,6 +17,7 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  CheckCircle, // 👈 تم استيراد أيقونة الصح
 } from "lucide-react";
 
 export default function RescueDetailsPage({
@@ -71,6 +72,13 @@ export default function RescueDetailsPage({
     setShowMenu(false);
     alert("Redirecting to edit form...");
     // توجيه لصفحة التعديل إن وجدت: router.push(`/rescue/${rescueData.id}/edit`)
+  };
+
+  // 👈 دالة لتحديد البوست كـ Rescued من القائمة المنسدلة
+  const handleMarkAsRescued = () => {
+    setShowMenu(false);
+    alert(`${formattedId} has been marked as rescued! 🎉`);
+    // أضف هنا كود التحديث الخاص بك في قاعدة البيانات
   };
 
   const handleSendComment = (e: React.FormEvent) => {
@@ -132,13 +140,21 @@ export default function RescueDetailsPage({
                     onClick={() => setShowMenu(false)}
                   />
 
-                  <div className="absolute top-12 right-0 z-20 w-40 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute top-12 right-0 z-20 w-48 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                     <button
                       onClick={handleEdit}
                       className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-700 flex items-center gap-2.5 transition"
                     >
                       <Pencil size={16} className="text-pink-400" />
                       <span>Edit Post</span>
+                    </button>
+                    {/* 👈 الخيار الثالث: Mark as Rescued */}
+                    <button
+                      onClick={handleMarkAsRescued}
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-purple-700 hover:bg-purple-50 flex items-center gap-2.5 transition"
+                    >
+                      <Heart size={16} className="text-purple-500" />
+                      <span>Mark as Rescued</span>
                     </button>
                     <button
                       onClick={handleDelete}
@@ -154,7 +170,7 @@ export default function RescueDetailsPage({
           </div>
 
           <div className="p-4 sm:p-6 md:p-8">
-            {/* الصورة والبصمة التحذيرية */}
+            {/* الصورة والبصمة التحذيرية أو شارة الإنقاذ */}
             <div className="relative w-full h-72 sm:h-96 rounded-2xl overflow-hidden shadow-md border border-pink-100 mb-6 group">
               <Image
                 src={rescueData.image}
@@ -163,7 +179,13 @@ export default function RescueDetailsPage({
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 priority
               />
-              {rescueData.isInjured && (
+              {/* 👈 شارة Rescued بدلاً من Urgent عند الانقاذ، ونفس اللون بنفسجي */}
+              {rescueData.isRescued ? (
+                <span className="absolute top-4 left-4 bg-purple-100/90 backdrop-blur-md text-purple-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-purple-300/40 flex items-center gap-1.5 animate-in fade-in duration-300 z-10">
+                  <CheckCircle size={15} className="text-purple-800" />
+                  <span>Cat Rescued!</span>
+                </span>
+              ) : rescueData.isInjured && (
                 <span className="absolute top-4 left-4 bg-pink-100/60 backdrop-blur-md text-pink-800 text-xs font-black px-3.5 py-1.5 rounded-full shadow-lg border border-red-100 flex items-center gap-1.5 animate-pulse">
                   <AlertTriangle size={14} />
                   <span>Urgent Medical Attention</span>

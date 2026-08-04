@@ -1,16 +1,16 @@
-// components/RescueCard.tsx
 "use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, AlertCircle, Heart, Activity } from "lucide-react";
+import { MapPin, AlertCircle, Heart, Activity, CheckCircle } from "lucide-react";
 
 type RescueCardProps = {
   id: number | string;
   image: string;
   city: string;
   isInjured?: boolean;
+  isRescued?: boolean; // 👈 إضافة خاصية الإنقاذ
 };
 
 export default function RescueCard({
@@ -18,6 +18,7 @@ export default function RescueCard({
   image,
   city,
   isInjured = false,
+  isRescued = false, // 👈 القيمة الافتراضية false
 }: RescueCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -48,15 +49,22 @@ export default function RescueCard({
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
 
-          {/* بادج Urgent على يسار الصورة */}
-          {isInjured && (
-            <div className="absolute top-3.5 left-3.5 bg-pink-100/60 backdrop-blur-md text-pink-800 text-xs font-black px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 animate-pulse z-10 ">
-              <AlertCircle size={14} />
-              <span>Urgent</span>
+          {/* 👈 بادج Rescued البنفسجي بديل لبادج Urgent إذا تم الإنقاذ */}
+          {isRescued ? (
+            <div className="absolute top-3.5 left-3.5 bg-purple-100/90 backdrop-blur-md text-purple-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-purple-300/40 flex items-center gap-1.5 z-10">
+              <CheckCircle size={14} className="text-purple-800" />
+              <span>Rescued!</span>
             </div>
+          ) : (
+            isInjured && (
+              <div className="absolute top-3.5 left-3.5 bg-pink-100/60 backdrop-blur-md text-pink-800 text-xs font-black px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 animate-pulse z-10">
+                <AlertCircle size={14} />
+                <span>Urgent</span>
+              </div>
+            )
           )}
 
-          {/* زر اللايك بنفس حجم وتصميم ورسمة الكود الثاني بالضبط */}
+          {/* زر المفضلة */}
           <button
             type="button"
             onClick={toggleLike}
@@ -74,15 +82,13 @@ export default function RescueCard({
           </button>
         </div>
 
-        {/* محتوى البطاقة: المعرف على اليسار، والمدينة مع حالة الصحة على اليمين */}
+        {/* محتوى البطاقة */}
         <div className="p-5 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            {/* عنوان المعرف - يتغير للون الأحمر عند الهوفر */}
             <h3 className="text-xl font-extrabold text-pink-950 transition-colors duration-300 group-hover:text-pink-600">
               {rescueId}
             </h3>
 
-            {/* المدينة وحالة الصحة على جهة اليمين بنفس التناسق */}
             <div className="flex items-center gap-1.5 flex-wrap justify-end">
               {/* badge المدينة */}
               <span className="flex items-center gap-1 text-xs font-semibold text-pink-600 bg-pink-50 px-2.5 py-1 rounded-xl border border-pink-100">
