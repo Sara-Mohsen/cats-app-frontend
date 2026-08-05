@@ -56,10 +56,10 @@ export default function Home() {
 
         <div className="hero-buttons">
           <Link href="/login">
-            <button className="btn-primary">Sign up</button>
+            <button className="btn-primary">Login</button>
           </Link>
 
-          <Link href="#latest-posts" ref={latestPostsRef}>
+          <Link href="#latest-posts#latest-posts" ref={latestPostsRef}>
             <button className="btn-secondary" onClick={scrollToLatestPosts}>
               View Cats
             </button>
