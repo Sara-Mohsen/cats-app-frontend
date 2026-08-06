@@ -25,10 +25,11 @@ export default function OptionsMenu({
 
   // 1. التوجيه لصفحة التعديل مع نوع البوست والـ ID
   const handleEdit = () => {
-    setShowMenu(false);
-    // التوجيه لصفحة التعديل/الإنشاء مع تمرير المعاملات
-    router.push(`/create?edit=${postId}&type=${postType}`);
-  };
+  setShowMenu(false);
+  // التوجيه لصفحة التعديل الصريحة مع تمرير الـ ID والـ Type
+  router.push(`/edit/${postId}?type=${postType}`);
+};
+
 
   // 2. التبديل بين حالة التبني/الإنقاذ وإلغائها
   const handleToggleStatus = async () => {

@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const pathname = usePathname();
   const hideNavbarPaths = ["/login", "/sign", "/details", "/create", "/profile", "/favorite"];
-  const shouldHideNavbar = hideNavbarPaths.includes(pathname) || pathname.startsWith("/details/",) || pathname.startsWith("/rescue/") || pathname.startsWith("/adopt/");
+  const shouldHideNavbar = hideNavbarPaths.includes(pathname) || pathname.startsWith("/details/",) || pathname.startsWith("/rescue/") || pathname.startsWith("/adopt/")|| pathname.startsWith("/edit/");
 
   useEffect(() => {
     const onScroll = () => {
@@ -56,7 +56,7 @@ export default function Navbar() {
 
       <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
         <Link href="/">Home</Link>
-        <Link href="/favorite">Posts</Link>
+        <Link href="/AllCatPosts">Posts</Link>
         <Link href="/profile">Dashboard</Link>
 
         <Link href="/create" className="create-btn">

@@ -7,8 +7,21 @@ import {
   FaGithub,
   FaMailBulk
 } from 'react-icons/fa';
+import { useRef } from 'react';
+
+
 
 export default function Footer() {
+
+  const homepageRef = useRef<HTMLAnchorElement>(null);
+  const scrollToHomePage = (e: React.MouseEvent) => {
+  e.preventDefault();
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
   return (
     <footer className="w-full dir-ltr font-sans text-slate-800 p-4 md:p-8 flex justify-center items-center">
       {/* Main Glassmorphism Card */}
@@ -42,8 +55,10 @@ export default function Footer() {
             <h3 className="text-lg font-bold text-white drop-shadow-sm mb-1">Quick Links</h3>
             <ul className="space-y-2 text-sm text-pink-900 font-medium">
               <li>
-                <Link href="/" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200">
-                  Home
+                <Link href="#home-page" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200" 
+                ref={homepageRef}
+                onClick={scrollToHomePage}>
+                    Home
                 </Link>
               </li>
               <li>

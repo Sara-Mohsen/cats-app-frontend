@@ -1,6 +1,8 @@
 import AdCards from "./AdCard";
 import { pics } from "../lib/datad";
-import { HeartHandshake } from "lucide-react";
+import { ArrowRight, HeartHandshake } from "lucide-react";
+import Link from "next/link";
+
 
 export default function AdPost() {
   return (
@@ -17,6 +19,15 @@ export default function AdPost() {
           {pics.map((post) => (
             <AdCards key={post.id} {...post} />
           ))}
+        </div>
+         <div className="flex justify-center mt-10">
+          <Link
+            href="/AllAdoptionPosts"
+            className="group inline-flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/50 backdrop-blur-md border border-white/40 text-white font-semibold text-sm md:text-base rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
+          >
+            <span>View All Posts</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>

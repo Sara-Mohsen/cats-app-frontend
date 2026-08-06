@@ -1,6 +1,7 @@
 import RescueCard from "./ResqCard"; // أو اسم المكون حسب مجلدك Cards
 import { rescuePics } from "../lib/datar"; // استيراد marray الخاص بالإنقاذ من ملف البيانات
-import { Siren } from "lucide-react";
+import { ArrowRight, Siren } from "lucide-react";
+import Link from "next/link";
 
 export default function RescuePost() {
   return (
@@ -15,6 +16,15 @@ export default function RescuePost() {
           {rescuePics.map((post) => (
             <RescueCard key={post.id} {...post} />
           ))}
+        </div>
+        <div className="flex justify-center mt-10">
+          <Link
+            href="/AllRescuePosts"
+            className="group inline-flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/50 backdrop-blur-md border border-white/40 text-white font-semibold text-sm md:text-base rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
+          >
+            <span>View All Posts</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>

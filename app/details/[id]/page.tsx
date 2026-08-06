@@ -21,7 +21,7 @@ export default function CatDetailsPage({
 
   if (!cat) {
     return (
-      <div className="min-h-screen w-full bg-linear-to-br from-pink-200 via-pink-100 to-purple-200 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl text-center shadow-xl border border-white/40">
           <h2 className="text-2xl font-bold text-pink-950 mb-2">Cat Not Found</h2>
           <p className="text-gray-600 text-sm mb-4">
@@ -40,7 +40,7 @@ export default function CatDetailsPage({
   }
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-br from-pink-200 via-pink-100 to-purple-200 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl my-6 space-y-5">
         
         {/* Main Details Card */}

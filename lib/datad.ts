@@ -10,7 +10,7 @@ export interface CatDetails {
   isVaccinated: boolean;
   isAdopted: boolean; // 👈 إضافة خاصية التبني (true / false)
   city: string;
-  phone?: string; // Optional property for phone number
+  phone: string; // Required property for phone number
 }
 
 export const pics: CatDetails[] = [

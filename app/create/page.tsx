@@ -12,6 +12,7 @@ import {
 
 import ImageUploader from "../../components/ImageUploader";
 import NormalCatForm, { NormalCatData } from "../../components/NormalCatForm";
+import AdoptionCatForm, { AdoptionCatData } from "../../components/AdoptionCatForm";
 import RescueCatForm, { RescueData } from "../../components/RescueCatForm";
 
 type TabType = "normal" | "rescue" | "adoption";
@@ -21,8 +22,20 @@ export default function CreatePostPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [ageError, setAgeError] = useState<string>("");
 
-  // States
-  const [catData, setCatData] = useState<NormalCatData>({
+  // 1. State للقطط العادية (بدون رقم هاتف)
+  const [normalCatData, setNormalCatData] = useState<NormalCatData>({
+    name: "",
+    age: "",
+    breed: "",
+    personality: "",
+    gender: "Male",
+    isNeutered: false,
+    isVaccinated: false,
+    city: "",
+  });
+
+  // 2. State لقطط التبني (مع رقم الهاتف)
+  const [adoptionCatData, setAdoptionCatData] = useState<AdoptionCatData>({
     name: "",
     age: "",
     breed: "",
@@ -34,6 +47,7 @@ export default function CreatePostPage() {
     phoneNumber: "",
   });
 
+  // 3. State لحالات الإنقاذ
   const [rescueData, setRescueData] = useState<RescueData>({
     // eslint-disable-next-line react-hooks/purity
     rescueId: `Rescue #${Math.floor(100 + Math.random() * 900)}`,
@@ -55,27 +69,38 @@ export default function CreatePostPage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
+    // تحديد العمر للفحص بناءً على نوع البوست
+    const currentAge =
+      activeTab === "normal" ? normalCatData.age : adoptionCatData.age;
+
     if (activeTab === "normal" || activeTab === "adoption") {
-      const numAge = Number(catData.age);
+      const numAge = Number(currentAge);
       if (numAge > 30 || numAge < 0 || isNaN(numAge)) {
         setAgeError("Age must be between 0 and 30 years");
         return;
       }
     }
 
+    // طباعة البيانات وحفظ البوست حسب الـ Tab
     if (activeTab === "rescue") {
       console.log("Rescue Post Submitted:", { ...rescueData, imagePreview });
+    } else if (activeTab === "adoption") {
+      console.log("Adoption Post Submitted:", {
+        ...adoptionCatData,
+        imagePreview,
+      });
     } else {
-      console.log(`${activeTab.toUpperCase()} Post Submitted:`, {
-        ...catData,
+      console.log("Normal Post Submitted:", {
+        ...normalCatData,
         imagePreview,
       });
     }
+
     alert("Post Created Successfully! 🐾");
   };
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-br from-pink-200 via-pink-100 to-purple-200 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all my-6">
         
         {/* Top Bar */}
@@ -97,7 +122,7 @@ export default function CreatePostPage() {
         </div>
 
         <div className="p-4 sm:p-6 md:p-8">
-          {/* Tabs */}
+          {/* Tabs Nav */}
           <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-pink-50/80 rounded-2xl border border-pink-100 mb-6">
             <button
               type="button"
@@ -105,7 +130,7 @@ export default function CreatePostPage() {
                 setActiveTab("normal");
                 resetImage();
               }}
-              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "normal"
                   ? "bg-white text-pink-600 shadow-sm border border-pink-100"
                   : "text-gray-500 hover:text-pink-600"
@@ -121,7 +146,7 @@ export default function CreatePostPage() {
                 setActiveTab("rescue");
                 resetImage();
               }}
-              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "rescue"
                   ? "bg-white text-pink-600 shadow-sm border border-pink-100"
                   : "text-gray-500 hover:text-pink-600"
@@ -137,7 +162,7 @@ export default function CreatePostPage() {
                 setActiveTab("adoption");
                 resetImage();
               }}
-              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === "adoption"
                   ? "bg-white text-pink-600 shadow-sm border border-pink-100"
                   : "text-gray-500 hover:text-pink-600"
@@ -158,18 +183,17 @@ export default function CreatePostPage() {
             {/* 2. Form Content conditional rendering */}
             {activeTab === "normal" && (
               <NormalCatForm
-                data={catData}
-                onChange={setCatData}
+                data={normalCatData}
+                onChange={setNormalCatData}
                 ageError={ageError}
                 setAgeError={setAgeError}
               />
             )}
 
             {activeTab === "adoption" && (
-              <NormalCatForm
-                data={catData}
-                onChange={setCatData}
-                isAdoption={true}
+              <AdoptionCatForm
+                data={adoptionCatData}
+                onChange={setAdoptionCatData}
                 ageError={ageError}
                 setAgeError={setAgeError}
               />
@@ -182,7 +206,7 @@ export default function CreatePostPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full mt-6 py-3.5 px-4 bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2"
+              className="w-full mt-6 py-3.5 px-4 bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2 cursor-pointer"
             >
               <Sparkles size={18} />
               <span>Create Post</span>

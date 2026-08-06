@@ -1,6 +1,7 @@
 "use client";
 
-import React, {ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
+import { Phone } from "lucide-react";
 
 const BREEDS = [
   "Persian",
@@ -24,7 +25,7 @@ const CITIES = [
   "Other",
 ];
 
-export type NormalCatData = {
+export type AdoptionCatData = {
   name: string;
   age: string;
   breed: string;
@@ -33,21 +34,22 @@ export type NormalCatData = {
   isNeutered: boolean;
   isVaccinated: boolean;
   city: string;
+  phoneNumber: string; // محدد وجباري هنا
 };
 
-type NormalCatFormProps = {
-  data: NormalCatData;
-  onChange: (data: NormalCatData) => void;
+type AdoptionCatFormProps = {
+  data: AdoptionCatData;
+  onChange: (data: AdoptionCatData) => void;
   ageError: string;
   setAgeError: (err: string) => void;
 };
 
-export default function NormalCatForm({
+export default function AdoptionCatForm({
   data,
   onChange,
   ageError,
   setAgeError,
-}: NormalCatFormProps) {
+}: AdoptionCatFormProps) {
   const handleAgeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     onChange({ ...data, age: val });
@@ -179,7 +181,7 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, gender: "Male" })}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold cursor-pointer ${
                 data.gender === "Male"
                   ? "bg-pink-500 text-white"
                   : "bg-white text-gray-600 border border-pink-200"
@@ -190,7 +192,7 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, gender: "Female" })}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold cursor-pointer ${
                 data.gender === "Female"
                   ? "bg-pink-500 text-white"
                   : "bg-white text-gray-600 border border-pink-200"
@@ -207,7 +209,7 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isNeutered: true })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
                 data.isNeutered ? "bg-pink-500 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -216,7 +218,7 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isNeutered: false })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
                 !data.isNeutered ? "bg-gray-400 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -231,7 +233,7 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isVaccinated: true })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
                 data.isVaccinated ? "bg-pink-500 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -240,13 +242,31 @@ export default function NormalCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isVaccinated: false })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
                 !data.isVaccinated ? "bg-gray-400 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
               No
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Owner Phone Number */}
+      <div>
+        <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
+          Owner Phone Number *
+        </label>
+        <div className="relative">
+          <Phone size={18} className="absolute left-3.5 top-3 text-pink-400" />
+          <input
+            type="tel"
+            value={data.phoneNumber}
+            onChange={(e) => onChange({ ...data, phoneNumber: e.target.value })}
+            placeholder="05XXXXXXXX"
+            className="w-full pl-10 pr-4 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            required
+          />
         </div>
       </div>
     </div>
