@@ -2,7 +2,8 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
-import { User, AtSign, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
+import { User, AtSign, Mail, Lock, Eye, EyeOff, UserPlus, ArrowLeft} from "lucide-react";
+import Link from "next/link";
 
 interface SignupFormData {
   fullName: string;
@@ -40,7 +41,17 @@ export default function SignupPage() {
         {/* Top Decorative Gradient Bar */}
         <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
 
-        <div className="p-8 sm:p-10 flex flex-col items-center">
+           {/* Back Button */}
+        <div className="p-4 sm:p-4 pb-0 flex items-center justify-between">
+          <Link
+            href="/login"
+            className="flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-900 bg-white/60 hover:bg-white/90 px-4 py-2 rounded-2xl border border-pink-100 transition shadow-xs"
+          >
+            <ArrowLeft size={18} />
+          </Link>
+        </div>
+
+        <div className="p-8 sm:p-10 pt-1 sm:px-10 sm:pb-10 sm:pt-1 flex flex-col items-center">
           {/* Logo Container */}
           <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center shadow-inner mb-4 border border-pink-100">
             <Image

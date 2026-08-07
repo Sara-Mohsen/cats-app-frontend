@@ -57,7 +57,7 @@ export default function Navbar() {
       <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
         <Link href="/">Home</Link>
         <Link href="/AllCatPosts">Posts</Link>
-        <Link href="/profile">Dashboard</Link>
+        <Link href="/dashboard">Dashboard</Link>
 
         <Link href="/create" className="create-btn">
           Create

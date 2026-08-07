@@ -4,7 +4,7 @@ import React, { use } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCatById } from "@/lib/data";
-
+import { useRouter } from "next/navigation"; 
 import OptionsMenu from "../../../components/OptionsMenu";
 import CatDetailsInfo from "../../../components/CatDetailsInfo";
 import CommentsSection from "../../../components/CommentsSection";
@@ -18,6 +18,7 @@ export default function CatDetailsPage({
 }) {
   const resolvedParams = use(params);
   const cat = getCatById(resolvedParams.id);
+  const router = useRouter();
 
   if (!cat) {
     return (
@@ -38,7 +39,7 @@ export default function CatDetailsPage({
       </div>
     );
   }
-
+ 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl my-6 space-y-5">
@@ -50,11 +51,11 @@ export default function CatDetailsPage({
           {/* Top Bar */}
           <div className="p-4 sm:p-6 pb-0 flex items-center justify-between">
             <Link
+              onClick={() => router.back()}
               href="/"
               className="flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-900 bg-white/60 hover:bg-white/90 px-4 py-2 rounded-2xl border border-pink-100 transition shadow-xs"
             >
               <ArrowLeft size={18} />
-              <span>Back to Home</span>
             </Link>
 
             <div className="flex items-center gap-2">

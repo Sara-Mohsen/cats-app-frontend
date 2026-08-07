@@ -62,12 +62,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/adopt" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200">
+                <Link href="/AllAdoptionPosts" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200">
                   Adopt
                 </Link>
               </li>
               <li>
-                <Link href="/rescue" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200">
+                <Link href="/AllRescuePosts" className="hover:text-pink-600 drop-shadow-sm transition-colors duration-200">
                   Rescue
                 </Link>
               </li>
@@ -94,7 +94,7 @@ export default function Footer() {
               <a href="https://github.com/Sara-Mohsen/cats-app-frontend" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="GitHub">
                 <FaGithub />
               </a>
-              <a href="https://www.linkedin.com/in/sara-mohsen-15108b311/" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="LinkedIn">
+              <a href="https://github.com/Sara-Mohsen" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="LinkedIn">
                 <FaLinkedinIn />
               </a>
             </div>

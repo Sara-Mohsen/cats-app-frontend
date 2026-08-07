@@ -4,7 +4,7 @@ import React, { useState, use } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getRescueById } from "@/lib/datar";
-
+import { useRouter } from "next/navigation"; 
 import HeaderFavoriteButton from "../../../components/HeaderFavoriteButton";
 import OptionsMenu from "../../../components/OptionsMenu";
 import DetailsImage from "../../../components/DetailsImage";
@@ -18,6 +18,8 @@ export default function RescueDetailsPage({
 }) {
   const resolvedParams = use(params);
   const rescueData = getRescueById(resolvedParams.id);
+  const router = useRouter();
+  
 
   // 👈 State تفاعلي لحالة الإنقاذ لتحديث الصفحة فوراً
   const [isRescued, setIsRescued] = useState<boolean>(
@@ -67,11 +69,11 @@ export default function RescueDetailsPage({
           {/* شريط التحكم العلوي */}
           <div className="p-4 sm:p-6 pb-0 flex items-center justify-between">
             <Link
+             onClick={() => router.back()}
               href="/"
               className="flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-900 bg-white/60 hover:bg-white/90 px-4 py-2 rounded-2xl border border-pink-100 transition shadow-xs"
             >
               <ArrowLeft size={18} />
-              <span>Back to Home</span>
             </Link>
 
             <div className="flex items-center gap-2">
