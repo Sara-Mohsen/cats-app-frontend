@@ -11,8 +11,8 @@ import {
   Wand2
 } from "lucide-react";
 import "../styles/dashboard.css"; 
-import DashboardSubNav from "@/components/DashboardSubNav";
-
+import "../styles/dash-nav.css"; 
+import DashNav from "../../components/DashNav";
 export default function Dashboard() {
   // كلاس الحركة للروابط (رفع وتكبير ناعم)
   const titleHoverStyle = "flex items-center gap-2 cursor-pointer inline-flex transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 hover:opacity-90";
@@ -20,7 +20,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       {/* شريط الخيارات الجديد في الأوفر سبيس العلوي */}
-      <DashboardSubNav />
+      <DashNav />
 
       {/* محتوى الصفحة الرئيسي */}
       <main className="dashboard-main-content">
