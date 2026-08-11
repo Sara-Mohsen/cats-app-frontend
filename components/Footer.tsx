@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer className="w-full dir-ltr font-sans text-slate-800 p-4 md:p-8 flex justify-center items-center">
       {/* Main Glassmorphism Card */}
-      <div className="w-full max-w-5xl backdrop-blur-md bg-white/30 dark:bg-slate-900/60 border border-white/60 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
+      <div className="w-full max-w-5xl backdrop-blur-md bg-white/30 border border-white/60 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 relative z-10 text-left">
           
