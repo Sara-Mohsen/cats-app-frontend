@@ -54,7 +54,8 @@ export type CommentType = {
   };
 };
 
-const API_URL = "http://127.0.0.1:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
 export async function getPosts(type?: "NORMAL" | "ADOPTION" | "RESCUE", token?: string): Promise<Post[]> {
   const url = type ? `${API_URL}/posts?type=${type}` : `${API_URL}/posts`;
@@ -278,11 +279,20 @@ export async function registerApi(data: {
 
 export function getFullImageUrl(imagePath?: string | null): string {
   if (!imagePath) return "";
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://") || imagePath.startsWith("data:")) {
+
+  if (
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://") ||
+    imagePath.startsWith("data:")
+  ) {
     return imagePath;
   }
-  const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
-  return `http://127.0.0.1:8000${cleanPath}`;
+
+  const cleanPath = imagePath.startsWith("/")
+    ? imagePath
+    : `/${imagePath}`;
+
+  return `${API_URL.replace("/api", "")}${cleanPath}`;
 }
 
 export async function updatePostApi(postId: number | string, formData: FormData, token: string) {
