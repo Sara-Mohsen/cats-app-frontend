@@ -21,8 +21,10 @@ import "../styles/dash-nav.css";
 import DashNav from "../../components/DashNav";
 import { useAuth } from "../context/AuthContext";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+
+const API_BASE_URL = API_URL.replace(/\/api$/, "");
 
 
 type UserData = {
@@ -78,7 +80,9 @@ const getStorageUrl = (path?: string | null) => {
     return path;
   }
 
-  const cleanPath = path.replace(/^\/+/, "").replace(/^storage\//, "");
+  const cleanPath = path
+    .replace(/^\/+/, "")
+    .replace(/^storage\/+/, "");
 
   return `${API_BASE_URL}/storage/${cleanPath}`;
 };
@@ -148,10 +152,10 @@ export default function Dashboard() {
         };
 
         const [meRes, postsRes, favRes, notifRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/me`, { headers }),
-          fetch(`${API_BASE_URL}/api/my-posts`, { headers }),
-          fetch(`${API_BASE_URL}/api/favorites`, { headers }),
-          fetch(`${API_BASE_URL}/api/notifications`, { headers }),
+          fetch(`${API_URL}/me`, { headers }),
+          fetch(`${API_URL}/my-posts`, { headers }),
+          fetch(`${API_URL}/favorites`, { headers }),
+          fetch(`${API_URL}/notifications`, { headers }),
         ]);
 
         if (meRes.ok) {
@@ -474,7 +478,7 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-      </main>
+      </main> 
     </div>
   );
 }

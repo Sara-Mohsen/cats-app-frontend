@@ -17,7 +17,7 @@ interface FavoritePost {
   alt: string;
   postType: string;
 }
-
+ 
 interface FavoriteItem {
   id: string | number;
   title?: string;
@@ -34,7 +34,29 @@ interface FavoriteItem {
 }
 
 const ITEMS_PER_PAGE = 8;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL = API_URL.replace(/\/api$/, "");
+
+const getStorageUrl = (path?: string | null) => {
+  if (!path || path === "null" || path === "undefined") {
+    return null;
+  }
+
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://") ||
+    path.startsWith("data:") ||
+    path.startsWith("blob:")
+  ) {
+    return path;
+  }
+
+  const cleanPath = path
+    .replace(/^\/+/, "")
+    .replace(/^storage\/+/, "");
+
+  return `${API_BASE_URL}/storage/${cleanPath}`;
+};
 
 export default function FavoritePage() {
   const router = useRouter();
@@ -55,7 +77,7 @@ export default function FavoritePage() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/favorites`, {
+        const response = await fetch(`${API_URL}/favorites`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
@@ -75,12 +97,12 @@ export default function FavoritePage() {
           if (item.images && item.images.length > 0) {
             const imgPath = item.images[0].image_url || item.images[0].url || item.images[0].path;
             if (imgPath) {
-              imageUrl = imgPath.startsWith("http") ? imgPath : `${API_BASE_URL}/storage/${imgPath}`;
+              imageUrl = getStorageUrl(imgPath) || "/images/Cats/pic1.png";
             }
           } else if (item.image) {
-            imageUrl = item.image.startsWith("http") ? item.image : `${API_BASE_URL}/storage/${item.image}`;
+            imageUrl = getStorageUrl(item.image) || "/images/Cats/pic1.png";
           } else if (item.image_url) {
-            imageUrl = item.image_url.startsWith("http") ? item.image_url : `${API_BASE_URL}/storage/${item.image_url}`;
+            imageUrl = getStorageUrl(item.image_url) || "/images/Cats/pic1.png";
           }
 
           return {

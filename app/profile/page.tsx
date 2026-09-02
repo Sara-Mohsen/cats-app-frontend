@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { 
@@ -9,7 +9,7 @@ import {
 import "../styles/dashboard.css";
 import "../styles/dash-nav.css";
 import DashNav from "../../components/DashNav";
-import { getProfileApi, updateProfileApi, getCitiesApi, getFullImageUrl } from "@/lib/api/posts"; 
+import { getProfileApi, updateProfileApi, getCitiesApi,  } from "@/lib/api/posts"; 
 import { useAuth } from "../context/AuthContext";
 
 interface City {
@@ -41,6 +41,32 @@ export default function ProfilePage() {
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState("");
 
+  const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+
+const API_BASE_URL = API_URL.replace(/\/api$/, "");
+
+const getStorageUrl = useCallback((path?: string | null) => {
+  if (!path || path === "null" || path === "undefined") {
+    return "";
+  }
+
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://") ||
+    path.startsWith("data:") ||
+    path.startsWith("blob:")
+  ) {
+    return path;
+  }
+
+  const cleanPath = path
+    .replace(/^\/+/, "")
+    .replace(/^storage\/+/, "");
+
+  return `${API_BASE_URL}/storage/${cleanPath}`;
+}, [API_BASE_URL]);
+
   useEffect(() => {
     async function initData() {
       const token = authContextToken || localStorage.getItem("token");
@@ -71,7 +97,7 @@ export default function ProfilePage() {
           cityId: String(userCityId),
           cityName: userCityName,
           password: "••••••••",
-          avatar: user.avatar_url ? getFullImageUrl(user.avatar_url) : "",
+          avatar: user.avatar_url ? getStorageUrl(user.avatar_url) : "",
         });
       } catch (err: unknown) {
         console.error("Profile Fetch Error:", err);
@@ -90,7 +116,7 @@ export default function ProfilePage() {
     }
 
     initData();
-  }, [authContextToken, authUser, router, logout]);
+  }, [authContextToken, authUser, router, logout, getStorageUrl]);
 
   const handleEdit = (field: string, currentValue: string) => {
     setEditingField(field);
@@ -151,9 +177,9 @@ export default function ProfilePage() {
 
       setProfile((prev) => ({
         ...prev,
-        avatar: getFullImageUrl(updatedUser.avatar_url),
+        avatar: getStorageUrl(updatedUser.avatar_url),
       }));
-
+ 
       showSuccessToast();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to upload avatar";
