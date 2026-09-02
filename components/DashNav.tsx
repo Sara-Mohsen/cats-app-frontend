@@ -16,8 +16,10 @@ import {
 
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+
+const API_BASE_URL = API_URL.replace(/\/api$/, "");
 
 type NotificationItem = {
   read?: boolean;
@@ -29,6 +31,7 @@ const getStorageUrl = (path?: string | null) => {
   if (!path || path === "null" || path === "undefined") {
     return null;
   }
+
   if (
     path.startsWith("http://") ||
     path.startsWith("https://") ||
@@ -37,7 +40,11 @@ const getStorageUrl = (path?: string | null) => {
   ) {
     return path;
   }
-  const cleanPath = path.replace(/^\/+/, "").replace(/^storage\//, "");
+
+  const cleanPath = path
+    .replace(/^\/+/, "")
+    .replace(/^storage\/+/, "");
+
   return `${API_BASE_URL}/storage/${cleanPath}`;
 };
 
@@ -69,8 +76,8 @@ export default function DashNav() {
         };
 
         const [meRes, notifRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/me`, { headers }),
-          fetch(`${API_BASE_URL}/api/notifications`, { headers }),
+          fetch(`${API_URL}/me`, { headers }),
+          fetch(`${API_URL}/notifications`, { headers }),
         ]);
 
         if (meRes.ok) {
