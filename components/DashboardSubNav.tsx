@@ -45,7 +45,6 @@ export default function DashboardSubNav() {
 
   return (
     <div className="w-[min(93%,1100px)] mx-auto pt-35 md:pt-35 pb-2 transition-all duration-300">
-      {/* إطار زجاجي شفاف بنفس طابع شريط البحث */}
       <div className="relative flex items-center justify-around bg-white/30 backdrop-blur-md border border-white/70 shadow-md rounded-3xl p-2 md:p-1.5 transition-all duration-300">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -58,7 +57,6 @@ export default function DashboardSubNav() {
                 isActive ? "text-pink-900" : "text-gray-500 hover:text-pink-900"
               }`}
             >
-              {/* المؤشر الأبيض المتحرك بسلاسة (Sliding Indicator) */}
               {isActive && (
                 <motion.div
                   layoutId="activeTabIndicator"
@@ -71,7 +69,6 @@ export default function DashboardSubNav() {
                 />
               )}
 
-              {/* الأيقونة أو الصورة */}
               {item.isProfile ? (
                 <div
                   className={`w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden border transition-all duration-300 ${

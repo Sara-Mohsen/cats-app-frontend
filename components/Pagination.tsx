@@ -16,7 +16,6 @@ export default function Pagination({
 
   const handlePageClick = (page: number) => {
     onPageChange(page);
-    // Smooth Scroll إلى أول الصفحة عند الانتقال
     const postsSection = document.getElementById("all-posts-section");
     if (postsSection) {
       postsSection.scrollIntoView({ behavior: "smooth" });
@@ -25,9 +24,7 @@ export default function Pagination({
 
   return (
     <div className="flex justify-center items-center mt-12 mb-6">
-      {/* الكبسولة الزجاجية المماثلة لتصميم Figma */}
       <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-lg">
-        {/* زر السابق */}
         <button
           onClick={() => handlePageClick(currentPage - 1)}
           disabled={currentPage === 1}
@@ -36,7 +33,6 @@ export default function Pagination({
           <ChevronLeft className="w-5 h-5" />
         </button>
 
-        {/* الأرقام الدائرية */}
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
           const isActive = currentPage === page;
           return (
@@ -54,7 +50,6 @@ export default function Pagination({
           );
         })}
 
-        {/* زر التالي */}
         <button
           onClick={() => handlePageClick(currentPage + 1)}
           disabled={currentPage === totalPages}

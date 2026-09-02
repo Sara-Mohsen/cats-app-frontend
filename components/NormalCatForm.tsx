@@ -1,28 +1,9 @@
 "use client";
 
-import React, {ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 
-const BREEDS = [
-  "Persian",
-  "Siamese",
-  "British Shorthair",
-  "Scottish Fold",
-  "Ragdoll",
-  "Orange Tabby",
-  "Mixed / Local",
-  "Other",
-];
-
-const CITIES = [
-  "Riyadh",
-  "Jeddah",
-  "Makkah",
-  "Madinah",
-  "Dammam",
-  "Khobar",
-  "Abha",
-  "Other",
-];
+export type CityOption = { id: number; name: string };
+export type BreedOption = { id: number; name: string };
 
 export type NormalCatData = {
   name: string;
@@ -38,6 +19,9 @@ export type NormalCatData = {
 type NormalCatFormProps = {
   data: NormalCatData;
   onChange: (data: NormalCatData) => void;
+  cities: CityOption[];
+  breeds: BreedOption[];
+  loading?: boolean;
   ageError: string;
   setAgeError: (err: string) => void;
 };
@@ -45,6 +29,9 @@ type NormalCatFormProps = {
 export default function NormalCatForm({
   data,
   onChange,
+  cities,
+  breeds,
+  loading = false,
   ageError,
   setAgeError,
 }: NormalCatFormProps) {
@@ -70,7 +57,6 @@ export default function NormalCatForm({
 
   return (
     <div className="space-y-4">
-      {/* Name & Age */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
@@ -105,31 +91,28 @@ export default function NormalCatForm({
             required
           />
           {ageError && (
-            <p className="text-red-500 text-xs mt-1 font-semibold">
-              {ageError}
-            </p>
+            <p className="text-red-500 text-xs mt-1 font-semibold">{ageError}</p>
           )}
         </div>
       </div>
 
-      {/* Breed & City */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-            Breed *
+            Breed
           </label>
           <select
             value={data.breed}
             onChange={(e) => onChange({ ...data, breed: e.target.value })}
             className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-            required
+            disabled={loading}
           >
-            <option value="" disabled hidden>
-              Choose Breed
+            <option value="">
+              {loading ? "Loading breeds..." : "Choose Breed (Optional)"}
             </option>
-            {BREEDS.map((b) => (
-              <option key={b} value={b}>
-                {b}
+            {breeds.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
               </option>
             ))}
           </select>
@@ -143,21 +126,21 @@ export default function NormalCatForm({
             value={data.city}
             onChange={(e) => onChange({ ...data, city: e.target.value })}
             className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            disabled={loading}
             required
           >
             <option value="" disabled hidden>
-              Choose City
+              {loading ? "Loading cities..." : "Choose City"}
             </option>
-            {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {cities.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Personality */}
       <div>
         <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
           Personality
@@ -171,7 +154,6 @@ export default function NormalCatForm({
         />
       </div>
 
-      {/* Toggles */}
       <div className="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-pink-900 uppercase">Gender:</span>
@@ -250,5 +232,5 @@ export default function NormalCatForm({
         </div>
       </div>
     </div>
-  );
+  ); 
 }

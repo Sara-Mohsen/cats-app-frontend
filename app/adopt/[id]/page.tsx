@@ -1,27 +1,58 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { getCatById } from "@/lib/datad";
+import { getPostById, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation"; 
 import HeaderFavoriteButton from "../../../components/HeaderFavoriteButton";
 import OptionsMenu from "../../../components/OptionsMenu";
 import DetailsImage from "../../../components/DetailsImage";
 import CatDetailsInfo from "../../../components/CatDetailsInfo";
 import CommentsSection from "../../../components/CommentsSection";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function AdoptionDetailsPage({
   params,
-}: {
+}: { 
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
-  const cat = getCatById(resolvedParams.id);
   const router = useRouter();
-  const [isAdopted, setIsAdopted] = useState<boolean>(cat?.isAdopted || false);
+  
+  const { token, user } = useAuth();
 
-  if (!cat) {
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdopted, setIsAdopted] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function fetchCat() {
+      try {
+        setLoading(true);
+        const data = await getPostById(resolvedParams.id, token ?? undefined);
+        if (data) {
+          setPost(data);
+          setIsAdopted(data.status === "CLOSED");
+        }
+      } catch (err) {
+        console.error("Error fetching cat details:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCat();
+  }, [resolvedParams.id, token]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-4">
+        <p className="text-white text-lg font-bold">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!post) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl text-center shadow-xl border border-white/40">
@@ -40,18 +71,30 @@ export default function AdoptionDetailsPage({
   }
 
   const handleAdopt = () => {
-    alert(`Thank you for your interest in adopting ${cat.name}! 🐾`);
+    alert(`Thank you for your interest in adopting ${post.name || "this cat"}! 🐾`);
   };
+
+  const formattedCatData = {
+    name: post.name ?? "Unknown Cat",
+    city: post.city?.name ?? "Unknown",
+    breed: post.breed?.name ?? "Unknown",
+    age: post.age ?? "N/A",
+    gender: post.gender ?? "Unknown",
+    isNeutered: post.is_neutered,
+    isVaccinated: post.is_vaccinated,
+    personality: post.personality,
+    phone: post.contact_number,
+  };
+
+  const isOwner = Boolean(user?.id && post.user?.id && String(user.id) === String(post.user.id));
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl my-6 space-y-5">
         
-        {/* Card Container */}
         <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all">
           <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
 
-          {/* Header */}
           <div className="p-4 sm:p-6 pb-0 flex items-center justify-between">
             <Link
               onClick={() => router.back()}
@@ -62,9 +105,10 @@ export default function AdoptionDetailsPage({
             </Link>
 
             <div className="flex items-center gap-2">
-              <HeaderFavoriteButton />
+              <HeaderFavoriteButton postId={post.id} initialFavorite={post.is_liked} />
               <OptionsMenu
-                postId={cat.id}
+                postId={post.id}
+                ownerId={post.user?.id}
                 postType="adoption"
                 isDone={isAdopted}
                 onToggleStatus={(newStatus) => setIsAdopted(newStatus)}
@@ -72,37 +116,34 @@ export default function AdoptionDetailsPage({
             </div>
           </div>
 
-          {/* Body */}
           <div className="p-4 sm:p-6 md:p-8 space-y-6">
-            {/* 1. الصورة ببادج التبني والجنس */}
             <DetailsImage
-              src={cat.image}
-              alt={cat.name}
-              gender={cat.gender}
+              src={post.image}
+              alt={post.name ?? "Cat"}
+              gender={post.gender ?? "UNKNOWN"}
               isAdopted={isAdopted}
             />
 
-            {/* 2. تفاصيل القطة والرقم المعروض */}
-            <CatDetailsInfo cat={{ ...cat, phone: cat.phone }} />
+            <CatDetailsInfo cat={formattedCatData} />
 
-            {/* 3. زر التبني الديناميكي المتغير بالحالة */}
-            <button
-              onClick={handleAdopt}
-              disabled={isAdopted}
-              className={`w-full py-4 px-6 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2 ${
-                isAdopted
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
-                  : "bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white hover:shadow-xl transform active:scale-[0.98] cursor-pointer"
-              }`}
-            >
-              <Sparkles size={20} />
-              <span>{isAdopted ? "Already Adopted" : `Adopt ${cat.name}`}</span>
-            </button>
+            {!isOwner && (
+              <button
+                onClick={handleAdopt}
+                disabled={isAdopted}
+                className={`w-full py-4 px-6 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2 ${
+                  isAdopted
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                    : "bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white hover:shadow-xl transform active:scale-[0.98] cursor-pointer"
+                }`}
+              >
+                <Sparkles size={20} />
+                <span>{isAdopted ? "Already Adopted" : `Adopt ${post.name ?? "Cat"}`}</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* قسم التعليقات المستقل */}
-        <CommentsSection postId={cat.id} />
+        <CommentsSection postId={post.id} postAuthorId={post.user?.id} />
 
       </div>
     </div>

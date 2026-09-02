@@ -3,19 +3,10 @@
 import React from "react";
 import { Check, X, Phone } from "lucide-react";
 
-const CITIES = [
-  "Riyadh",
-  "Jeddah",
-  "Makkah",
-  "Madinah",
-  "Dammam",
-  "Khobar",
-  "Abha",
-  "Other",
-];
+export type CityOption = { id: number; name: string };
 
 export type RescueData = {
-  rescueId: string;
+  rescueId?: string; 
   hasInjury: boolean;
   injuryDescription: string;
   city: string;
@@ -25,22 +16,29 @@ export type RescueData = {
 type RescueCatFormProps = {
   data: RescueData;
   onChange: (data: RescueData) => void;
+  cities: CityOption[];
+  loading?: boolean;
 };
 
-export default function RescueCatForm({ data, onChange }: RescueCatFormProps) {
+export default function RescueCatForm({
+  data,
+  onChange,
+  cities,
+  loading = false,
+}: RescueCatFormProps) {
   return (
     <div className="space-y-4">
-      {/* Auto Generated ID Badge */}
-      <div className="flex items-center justify-between bg-purple-50 p-3 rounded-2xl border border-purple-100">
-        <span className="text-xs font-bold text-purple-900 uppercase">
-          Rescue Case ID:
-        </span>
-        <span className="text-xs font-extrabold text-purple-700 bg-white px-3 py-1 rounded-xl border border-purple-200">
-          {data.rescueId}
-        </span>
-      </div>
+      {data.rescueId && (
+        <div className="flex items-center justify-between bg-purple-50 p-3 rounded-2xl border border-purple-100">
+          <span className="text-xs font-bold text-purple-900 uppercase">
+            Rescue Case ID:
+          </span>
+          <span className="text-xs font-extrabold text-purple-700 bg-white px-3 py-1 rounded-xl border border-purple-200">
+            {data.rescueId}
+          </span>
+        </div>
+      )}
 
-      {/* City */}
       <div>
         <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
           City *
@@ -49,20 +47,20 @@ export default function RescueCatForm({ data, onChange }: RescueCatFormProps) {
           value={data.city}
           onChange={(e) => onChange({ ...data, city: e.target.value })}
           className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+          disabled={loading}
           required
         >
           <option value="" disabled hidden>
-            Choose City
+            {loading ? "Loading cities..." : "Choose City"}
           </option>
-          {CITIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+          {cities.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Injury Check */}
       <div className="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-pink-900 uppercase">
@@ -94,7 +92,6 @@ export default function RescueCatForm({ data, onChange }: RescueCatFormProps) {
           </div>
         </div>
 
-        {/* Description field if Injured = True */}
         {data.hasInjury && (
           <div className="pt-2 border-t border-pink-100">
             <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
@@ -114,7 +111,6 @@ export default function RescueCatForm({ data, onChange }: RescueCatFormProps) {
         )}
       </div>
 
-      {/* User Phone Number */}
       <div>
         <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
           User Phone Number *

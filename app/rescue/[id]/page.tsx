@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getRescueById } from "@/lib/datar";
+import { getPostById, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation"; 
 import HeaderFavoriteButton from "../../../components/HeaderFavoriteButton";
 import OptionsMenu from "../../../components/OptionsMenu";
 import DetailsImage from "../../../components/DetailsImage";
 import RescueDetailsInfo from "../../../components/RescueDetailsInfo";
 import CommentsSection from "../../../components/CommentsSection";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function RescueDetailsPage({
   params,
@@ -17,16 +18,43 @@ export default function RescueDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
-  const rescueData = getRescueById(resolvedParams.id);
   const router = useRouter();
   
+  // 👈 1. جلب بيانات user الحالية بجانب token
+  const { token, user } = useAuth(); 
 
-  // 👈 State تفاعلي لحالة الإنقاذ لتحديث الصفحة فوراً
-  const [isRescued, setIsRescued] = useState<boolean>(
-    rescueData?.isRescued || false
-  );
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isRescued, setIsRescued] = useState<boolean>(false);
 
-  if (!rescueData) {
+  useEffect(() => {
+    async function fetchRescueCase() {
+      try {
+        setLoading(true);
+        const data = await getPostById(resolvedParams.id, token ?? undefined);
+        if (data) {
+          setPost(data);
+          setIsRescued(data.status === "CLOSED");
+        }
+      } catch (error) {
+        console.error("Error fetching rescue details:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRescueCase();
+  }, [resolvedParams.id, token]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-4">
+        <p className="text-white text-lg font-bold">Loading case details...</p>
+      </div>
+    );
+  }
+
+  if (!post) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl text-center shadow-xl border border-white/40">
@@ -48,9 +76,16 @@ export default function RescueDetailsPage({
     );
   }
 
-  const formattedId =
-    rescueData.formattedId ||
-    `Rescue #${String(rescueData.id).padStart(2, "0")}`;
+  const formattedId = `Rescue #${String(post.id).padStart(2, "0")}`;
+
+  const rescueData = {
+    id: post.id,
+    formattedId,
+    city: post.city?.name ?? "Unknown",
+    isInjured: post.is_injured ?? false,
+    injuryDescription: post.injury_description ?? undefined,
+    phone: post.contact_number ?? "N/A",
+  };
 
   const handleRescueAction = () => {
     alert(
@@ -58,18 +93,19 @@ export default function RescueDetailsPage({
     );
   };
 
+  // 👈 2. التحقق من شرط الملكية (مع التأكد من تحويل المعرفات لنفس النوع سواء String أو Number)
+  const isOwner = Boolean(user?.id && post.user?.id && String(user.id) === String(post.user.id));
+
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl my-6 space-y-5">
         
-        {/* بطاقة التفاصيل الرئيسية */}
         <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all">
           <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
 
-          {/* شريط التحكم العلوي */}
           <div className="p-4 sm:p-6 pb-0 flex items-center justify-between">
             <Link
-             onClick={() => router.back()}
+              onClick={() => router.back()}
               href="/"
               className="flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-900 bg-white/60 hover:bg-white/90 px-4 py-2 rounded-2xl border border-pink-100 transition shadow-xs"
             >
@@ -77,10 +113,10 @@ export default function RescueDetailsPage({
             </Link>
 
             <div className="flex items-center gap-2">
-              <HeaderFavoriteButton />
-              {/* المنيو المطور: تغيير الحالة التفاعلي */}
+              <HeaderFavoriteButton postId={post.id} initialFavorite={post.is_liked} />
               <OptionsMenu
-                postId={rescueData.id}
+                postId={post.id}
+                ownerId={post.user?.id}
                 postType="rescue"
                 isDone={isRescued}
                 onToggleStatus={(newStatus) => setIsRescued(newStatus)}
@@ -89,27 +125,25 @@ export default function RescueDetailsPage({
           </div>
 
           <div className="p-4 sm:p-6 md:p-8 space-y-6">
-            {/* 1. الصورة وشارة الإنقاذ */}
             <DetailsImage
-              src={rescueData.image}
+              src={post.image}
               alt={formattedId}
               isRescued={isRescued}
-              isInjured={rescueData.isInjured}
+              isInjured={post.is_injured ?? false}
             />
 
-            {/* 2. تفاصيل حالة الإنقاذ مع تمرير isRescued لتحديث شكل الزر السفلي */}
             <RescueDetailsInfo
-              rescueData={{ ...rescueData, formattedId }}
-              isRescued={isRescued} // 👈 التعديل المهم هنا لتغيير شكل ونص الزر السفلي
+              rescueData={rescueData}
+              isRescued={isRescued}
+              isOwner={isOwner}
               onRescueAction={handleRescueAction}
             />
           </div>
         </div>
 
-        {/* 3. قسم التعليقات المستقل */}
-        <CommentsSection postId={rescueData.id} />
+        <CommentsSection postId={post.id} postAuthorId={post.user?.id} />
 
       </div>
     </div>
   );
-}
+} 

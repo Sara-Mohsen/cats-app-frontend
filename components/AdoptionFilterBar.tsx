@@ -34,7 +34,6 @@ export default function AdoptionFilterBar({
 
   return (
     <div className="w-full bg-white/30 backdrop-blur-md border border-white/40 rounded-3xl p-4 md:p-6 shadow-lg mt-6 mb-10 transition-all">
-      {/* الصف العلوي: البحث + زر إظهار/إخفاء الفلاتر */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -66,10 +65,8 @@ export default function AdoptionFilterBar({
         </button>
       </div>
 
-      {/* قسم الفلاتر المنبثقة */}
       {showFilters && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-4 pt-4 border-t border-white/30 transition-all duration-300">
-          {/* Breed Filter */}
           <select
             value={filters.breed}
             onChange={(e) => handleChange("breed", e.target.value)}
@@ -83,7 +80,6 @@ export default function AdoptionFilterBar({
             ))}
           </select>
 
-          {/* City Filter */}
           <select
             value={filters.city}
             onChange={(e) => handleChange("city", e.target.value)}
@@ -97,7 +93,6 @@ export default function AdoptionFilterBar({
             ))}
           </select>
 
-          {/* Gender Filter */}
           <select
             value={filters.gender}
             onChange={(e) => handleChange("gender", e.target.value)}
@@ -108,7 +103,6 @@ export default function AdoptionFilterBar({
             <option value="Female">Female ♀</option>
           </select>
 
-          {/* Neutered Filter */}
           <select
             value={filters.isNeutered}
             onChange={(e) => handleChange("isNeutered", e.target.value)}
@@ -119,7 +113,6 @@ export default function AdoptionFilterBar({
             <option value="false">Not Neutered</option>
           </select>
 
-          {/* Adopted Status Filter 👈 الفلتر المضاف للتبني */}
           <select
             value={filters.isAdopted}
             onChange={(e) => handleChange("isAdopted", e.target.value)}
@@ -130,7 +123,6 @@ export default function AdoptionFilterBar({
             <option value="true">Adopted ❤️</option>
           </select>
 
-          {/* Reset Button */}
           <button
             onClick={onReset}
             className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 bg-pink-500/40 hover:bg-pink-400 text-white font-medium text-sm py-2.5 px-4 rounded-2xl transition-all shadow-md active:scale-95"

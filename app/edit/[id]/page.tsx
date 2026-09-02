@@ -9,38 +9,38 @@ import {
   HeartHandshake,
   ArrowLeft,
   Pencil,
+  Loader2,
 } from "lucide-react";
 
 import ImageUploader from "../../../components/ImageUploader";
-import NormalCatForm, { NormalCatData } from "../../../components/NormalCatForm";
+import NormalCatForm, { NormalCatData, CityOption, BreedOption } from "../../../components/NormalCatForm";
 import AdoptionCatForm, { AdoptionCatData } from "../../../components/AdoptionCatForm";
 import RescueCatForm, { RescueData } from "../../../components/RescueCatForm";
 
-// 1. بيانات القطط العادية (بدون رقم هاتف)
-import { getCatById as getNormalCatById } from "../../../lib/data";
-
-// 2. بيانات التبني (تحتوي على رقم هاتف)
-import { getCatById as getAdoptionCatById } from "../../../lib/datad";
-
-// 3. بيانات الإنقاذ
-import { getRescueById } from "../../../lib/datar";
+import { useAuth } from "@/app/context/AuthContext";
+import { getPostById, updatePostApi, getFullImageUrl, getCitiesApi, getBreedsApi } from "@/lib/api/posts";
 
 type TabType = "normal" | "rescue" | "adoption";
 
 export default function EditPostPage() {
   const params = useParams();
-  const searchParams = useSearchParams(); // 👈 جلب معاملات الـ URL (النوع)
+  const searchParams = useSearchParams(); 
   const router = useRouter();
+  const { token } = useAuth();
 
-  const postId = params?.id;
-  const postType = searchParams.get("type"); // القيمة: "normal" | "adoption" | "rescue"
+  const postId = params?.id as string;
+  const postTypeParam = searchParams.get("type");
 
   const [activeTab, setActiveTab] = useState<TabType>("normal");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [ageError, setAgeError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // 1. State للقطط العادية (بدون phoneNumber)
+  const [cities, setCities] = useState<CityOption[]>([]);
+  const [breeds, setBreeds] = useState<BreedOption[]>([]);
+
   const [normalCatData, setNormalCatData] = useState<NormalCatData>({
     name: "",
     age: "",
@@ -52,7 +52,6 @@ export default function EditPostPage() {
     city: "",
   });
 
-  // 2. State لقطط التبني (يحتوي على phoneNumber)
   const [adoptionCatData, setAdoptionCatData] = useState<AdoptionCatData>({
     name: "",
     age: "",
@@ -65,7 +64,6 @@ export default function EditPostPage() {
     phoneNumber: "",
   });
 
-  // 3. State للإنقاذ
   const [rescueData, setRescueData] = useState<RescueData>({
     rescueId: "",
     hasInjury: false,
@@ -74,141 +72,97 @@ export default function EditPostPage() {
     phoneNumber: "",
   });
 
-  // useEffect للبحث المباشر والدقيق حسب الـ postType لتفادي تعارض الـ IDs
   useEffect(() => {
-    if (!postId) return;
+    async function loadInitialData() {
+      if (!postId) return;
+      try {
+        setIsLoading(true);
 
-    const idString = String(postId);
+        const [post, fetchedCities, fetchedBreeds] = await Promise.all([
+          getPostById(postId, token ?? undefined),
+          getCitiesApi ? getCitiesApi() : Promise.resolve([]),
+          getBreedsApi ? getBreedsApi() : Promise.resolve([]),
+        ]);
 
-    // 🔴 1. إذا كان البوست من نوع إنقاذ (Rescue)
-    if (postType === "rescue") {
-      const rescueItem = getRescueById(idString);
-      if (rescueItem) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setActiveTab("rescue");
-        setImagePreview(rescueItem.image || null);
-        setRescueData({
-          rescueId: rescueItem.formattedId || `Rescue #${rescueItem.id}`,
-          hasInjury: rescueItem.isInjured,
-          injuryDescription: rescueItem.injuryDescription || "",
-          city: rescueItem.city || "",
-          phoneNumber: rescueItem.phone || "",
-        });
+        if (fetchedCities) setCities(fetchedCities);
+        if (fetchedBreeds) setBreeds(fetchedBreeds);
+
+        if (!post) {
+          alert("Post not found!");
+          router.back();
+          return;
+        }
+
+        const type = (post.type || postTypeParam || "NORMAL").toLowerCase() as TabType;
+        setActiveTab(type);
+
+        if (post.image) {
+          console.log("OLD IMAGE FROM API:", post.image);
+          setImagePreview(post.image);
+        }
+
+        const cityValue = String(post.city_id || post.city?.id || "");
+        const breedValue = String(post.breed_id || post.breed?.id || "");
+
+        if (type === "rescue") {
+          setRescueData({
+            rescueId: post.case_number || `Rescue #${post.id}`,
+            hasInjury: post.is_injured ?? false,
+            injuryDescription: post.injury_description || "",
+            city: cityValue,
+            phoneNumber: post.contact_number || "",
+          });
+        } else if (type === "adoption") {
+          setAdoptionCatData({
+            name: post.name || "",
+            age: post.age !== null && post.age !== undefined ? String(post.age) : "",
+            breed: breedValue,
+            personality: post.personality || "",
+            gender: post.gender === "FEMALE" ? "Female" : "Male",
+            isNeutered: post.is_neutered ?? false,
+            isVaccinated: post.is_vaccinated ?? false,
+            city: cityValue,
+            phoneNumber: post.contact_number || "",
+          });
+        } else {
+          setNormalCatData({
+            name: post.name || "",
+            age: post.age !== null && post.age !== undefined ? String(post.age) : "",
+            breed: breedValue,
+            personality: post.personality || "",
+            gender: post.gender === "FEMALE" ? "Female" : "Male",
+            isNeutered: post.is_neutered ?? false,
+            isVaccinated: post.is_vaccinated ?? false,
+            city: cityValue,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching post data:", error);
+        alert("Failed to load post data.");
+      } finally {
         setIsLoading(false);
-        return;
       }
     }
 
-    // 🔴 2. إذا كان البوست من نوع تبني (Adoption)
-    if (postType === "adoption") {
-      const adoptionItem = getAdoptionCatById(idString);
-      if (adoptionItem) {
-        setActiveTab("adoption");
-        setImagePreview(adoptionItem.image || null);
-        setAdoptionCatData({
-          name: adoptionItem.name || "",
-          age: String(adoptionItem.age || ""),
-          breed: adoptionItem.breed || "",
-          personality: adoptionItem.personality || "",
-          gender: adoptionItem.gender || "Male",
-          isNeutered: adoptionItem.isNeutered || false,
-          isVaccinated: adoptionItem.isVaccinated || false,
-          city: adoptionItem.city || "",
-          phoneNumber: adoptionItem.phone || "", // 👈 استخدام .phone المطابق لملف datad.ts
-        });
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    // 🔴 3. إذا كان البوست عادي (Normal)
-    if (postType === "normal") {
-      const normalItem = getNormalCatById(idString);
-      if (normalItem) {
-        setActiveTab("normal");
-        setImagePreview(normalItem.image || null);
-        setNormalCatData({
-          name: normalItem.name || "",
-          age: String(normalItem.age || ""),
-          breed: normalItem.breed || "",
-          personality: normalItem.personality || "",
-          gender: normalItem.gender || "Male",
-          isNeutered: normalItem.isNeutered || false,
-          isVaccinated: normalItem.isVaccinated || false,
-          city: normalItem.city || "",
-        });
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    // 🟡 4. Fallback في حال فتح الصفحة مباشرة دون تمرير type بالـ URL
-    const rescueItem = getRescueById(idString);
-    if (rescueItem) {
-      setActiveTab("rescue");
-      setImagePreview(rescueItem.image || null);
-      setRescueData({
-        rescueId: rescueItem.formattedId || `Rescue #${rescueItem.id}`,
-        hasInjury: rescueItem.isInjured,
-        injuryDescription: rescueItem.injuryDescription || "",
-        city: rescueItem.city || "",
-        phoneNumber: rescueItem.phone || "",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    const adoptionItem = getAdoptionCatById(idString);
-    if (adoptionItem) {
-      setActiveTab("adoption");
-      setImagePreview(adoptionItem.image || null);
-      setAdoptionCatData({
-        name: adoptionItem.name || "",
-        age: String(adoptionItem.age || ""),
-        breed: adoptionItem.breed || "",
-        personality: adoptionItem.personality || "",
-        gender: adoptionItem.gender || "Male",
-        isNeutered: adoptionItem.isNeutered || false,
-        isVaccinated: adoptionItem.isVaccinated || false,
-        city: adoptionItem.city || "",
-        phoneNumber: adoptionItem.phone || "",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    const normalItem = getNormalCatById(idString);
-    if (normalItem) {
-      setActiveTab("normal");
-      setImagePreview(normalItem.image || null);
-      setNormalCatData({
-        name: normalItem.name || "",
-        age: String(normalItem.age || ""),
-        breed: normalItem.breed || "",
-        personality: normalItem.personality || "",
-        gender: normalItem.gender || "Male",
-        isNeutered: normalItem.isNeutered || false,
-        isVaccinated: normalItem.isVaccinated || false,
-        city: normalItem.city || "",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(false);
-  }, [postId, postType]);
+    loadInitialData();
+  }, [postId, token, postTypeParam, router]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // التحقق من العمر للقطط العادية والتبني
+    if (!token) {
+      alert("Please log in first!");
+      return;
+    }
+
     const currentCatAge =
       activeTab === "normal" ? normalCatData.age : adoptionCatData.age;
 
@@ -220,31 +174,59 @@ export default function EditPostPage() {
       }
     }
 
-    // طباعة البيانات وحفظ التعديل حسب نوع الـ Tab
-    if (activeTab === "rescue") {
-      console.log("Updated Rescue Post:", { id: postId, ...rescueData, imagePreview });
-    } else if (activeTab === "adoption") {
-      console.log("Updated Adoption Post:", {
-        id: postId,
-        ...adoptionCatData,
-        imagePreview,
-      });
-    } else {
-      console.log("Updated Normal Cat Post:", {
-        id: postId,
-        ...normalCatData,
-        imagePreview,
-      });
-    }
+    try {
+      setIsSubmitting(true);
+      const formData = new FormData();
+      formData.append("type", activeTab.toUpperCase());
 
-    alert("Post Updated Successfully! 🐾");
-    router.back();
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
+
+      // 3️⃣ إرسال IDs الخاص بالمدينة والفصيلة للباك إيند
+      if (activeTab === "normal") {
+        formData.append("name", normalCatData.name);
+        formData.append("age", normalCatData.age);
+        if (normalCatData.breed) formData.append("breed_id", normalCatData.breed);
+        formData.append("personality", normalCatData.personality);
+        formData.append("gender", normalCatData.gender.toUpperCase());
+        formData.append("is_neutered", normalCatData.isNeutered ? "1" : "0");
+        formData.append("is_vaccinated", normalCatData.isVaccinated ? "1" : "0");
+        formData.append("city_id", normalCatData.city);
+      } else if (activeTab === "adoption") {
+        formData.append("name", adoptionCatData.name);
+        formData.append("age", adoptionCatData.age);
+        if (adoptionCatData.breed) formData.append("breed_id", adoptionCatData.breed);
+        formData.append("personality", adoptionCatData.personality);
+        formData.append("gender", adoptionCatData.gender.toUpperCase());
+        formData.append("is_neutered", adoptionCatData.isNeutered ? "1" : "0");
+        formData.append("is_vaccinated", adoptionCatData.isVaccinated ? "1" : "0");
+        formData.append("city_id", adoptionCatData.city);
+        formData.append("contact_number", adoptionCatData.phoneNumber);
+      } else if (activeTab === "rescue") {
+        formData.append("is_injured", rescueData.hasInjury ? "1" : "0");
+        formData.append("injury_description", rescueData.injuryDescription);
+        formData.append("city_id", rescueData.city);
+        formData.append("contact_number", rescueData.phoneNumber);
+      }
+
+      await updatePostApi(postId, formData, token);
+
+      alert("Post Updated Successfully! 🐾");
+      router.back();
+    } catch (error) {
+      console.error("Failed to update post:", error);
+      alert(error instanceof Error ? error.message : "Failed to update post.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white font-semibold">
-        Loading post details... 🐾
+      <div className="min-h-screen flex items-center justify-center text-pink-600 font-semibold gap-2">
+        <Loader2 className="animate-spin" size={24} />
+        <span>Loading post details... 🐾</span>
       </div>
     );
   }
@@ -253,10 +235,8 @@ export default function EditPostPage() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all my-6">
         
-        {/* Top Bar */}
         <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
 
-        {/* Back Button & Header Badge */}
         <div className="p-4 sm:p-6 pb-0 flex items-center justify-between">
           <button
             type="button"
@@ -274,7 +254,6 @@ export default function EditPostPage() {
         </div>
 
         <div className="p-4 sm:p-6 md:p-8">
-          {/* Tabs Nav */}
           <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-pink-50/80 rounded-2xl border border-pink-100 mb-6">
             <button
               type="button"
@@ -317,19 +296,20 @@ export default function EditPostPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* 1. Image Uploader */}
             <ImageUploader
               imagePreview={imagePreview}
               onImageChange={handleImageChange}
             />
 
-            {/* 2. Form Content إسناد المكون المفصول والمناسب لكل نوع */}
+            {/* 4️⃣ تمرير القوائم الحقيقية إلى المكونات بدلاً من مصفوفات فارغة */}
             {activeTab === "normal" && (
               <NormalCatForm
                 data={normalCatData}
                 onChange={setNormalCatData}
                 ageError={ageError}
                 setAgeError={setAgeError}
+                cities={cities}
+                breeds={breeds}
               />
             )}
 
@@ -339,19 +319,29 @@ export default function EditPostPage() {
                 onChange={setAdoptionCatData}
                 ageError={ageError}
                 setAgeError={setAgeError}
+                cities={cities}
+                breeds={breeds}
               />
             )}
 
             {activeTab === "rescue" && (
-              <RescueCatForm data={rescueData} onChange={setRescueData} />
+              <RescueCatForm
+                data={rescueData}
+                onChange={setRescueData}
+                cities={cities}
+              />
             )}
 
-            {/* Submit / Update Button */}
             <button
               type="submit"
-              className="w-full mt-6 py-3.5 px-4 bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full mt-6 py-3.5 px-4 bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-2xl shadow-md hover:shadow-lg transform active:scale-[0.98] transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <Sparkles size={18} />
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <Sparkles size={18} />
+              )}
               <span>Save Changes</span>
             </button>
           </form>

@@ -3,27 +3,8 @@
 import React, { ChangeEvent } from "react";
 import { Phone } from "lucide-react";
 
-const BREEDS = [
-  "Persian",
-  "Siamese",
-  "British Shorthair",
-  "Scottish Fold",
-  "Ragdoll",
-  "Orange Tabby",
-  "Mixed / Local",
-  "Other",
-];
-
-const CITIES = [
-  "Riyadh",
-  "Jeddah",
-  "Makkah",
-  "Madinah",
-  "Dammam",
-  "Khobar",
-  "Abha",
-  "Other",
-];
+export type CityOption = { id: number; name: string };
+export type BreedOption = { id: number; name: string };
 
 export type AdoptionCatData = {
   name: string;
@@ -34,12 +15,15 @@ export type AdoptionCatData = {
   isNeutered: boolean;
   isVaccinated: boolean;
   city: string;
-  phoneNumber: string; // محدد وجباري هنا
+  phoneNumber: string;
 };
 
 type AdoptionCatFormProps = {
   data: AdoptionCatData;
   onChange: (data: AdoptionCatData) => void;
+  cities: CityOption[];
+  breeds: BreedOption[];
+  loading?: boolean;
   ageError: string;
   setAgeError: (err: string) => void;
 };
@@ -47,6 +31,9 @@ type AdoptionCatFormProps = {
 export default function AdoptionCatForm({
   data,
   onChange,
+  cities,
+  breeds,
+  loading = false,
   ageError,
   setAgeError,
 }: AdoptionCatFormProps) {
@@ -72,7 +59,6 @@ export default function AdoptionCatForm({
 
   return (
     <div className="space-y-4">
-      {/* Name & Age */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
@@ -107,31 +93,28 @@ export default function AdoptionCatForm({
             required
           />
           {ageError && (
-            <p className="text-red-500 text-xs mt-1 font-semibold">
-              {ageError}
-            </p>
+            <p className="text-red-500 text-xs mt-1 font-semibold">{ageError}</p>
           )}
         </div>
       </div>
 
-      {/* Breed & City */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
-            Breed *
+            Breed
           </label>
           <select
             value={data.breed}
             onChange={(e) => onChange({ ...data, breed: e.target.value })}
             className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-            required
+            disabled={loading}
           >
-            <option value="" disabled hidden>
-              Choose Breed
+            <option value="">
+              {loading ? "Loading breeds..." : "Choose Breed (Optional)"}
             </option>
-            {BREEDS.map((b) => (
-              <option key={b} value={b}>
-                {b}
+            {breeds.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
               </option>
             ))}
           </select>
@@ -145,21 +128,21 @@ export default function AdoptionCatForm({
             value={data.city}
             onChange={(e) => onChange({ ...data, city: e.target.value })}
             className="w-full px-3.5 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            disabled={loading}
             required
           >
             <option value="" disabled hidden>
-              Choose City
+              {loading ? "Loading cities..." : "Choose City"}
             </option>
-            {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {cities.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Personality */}
       <div>
         <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
           Personality
@@ -173,7 +156,6 @@ export default function AdoptionCatForm({
         />
       </div>
 
-      {/* Toggles */}
       <div className="p-4 bg-pink-50/50 rounded-2xl border border-pink-100 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-pink-900 uppercase">Gender:</span>
@@ -181,7 +163,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, gender: "Male" })}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold ${
                 data.gender === "Male"
                   ? "bg-pink-500 text-white"
                   : "bg-white text-gray-600 border border-pink-200"
@@ -192,7 +174,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, gender: "Female" })}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold ${
                 data.gender === "Female"
                   ? "bg-pink-500 text-white"
                   : "bg-white text-gray-600 border border-pink-200"
@@ -209,7 +191,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isNeutered: true })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium ${
                 data.isNeutered ? "bg-pink-500 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -218,7 +200,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isNeutered: false })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium ${
                 !data.isNeutered ? "bg-gray-400 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -233,7 +215,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isVaccinated: true })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium ${
                 data.isVaccinated ? "bg-pink-500 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -242,7 +224,7 @@ export default function AdoptionCatForm({
             <button
               type="button"
               onClick={() => onChange({ ...data, isVaccinated: false })}
-              className={`px-3 py-1 rounded-xl text-xs font-medium cursor-pointer ${
+              className={`px-3 py-1 rounded-xl text-xs font-medium ${
                 !data.isVaccinated ? "bg-gray-400 text-white" : "bg-white text-gray-500 border border-pink-200"
               }`}
             >
@@ -252,7 +234,6 @@ export default function AdoptionCatForm({
         </div>
       </div>
 
-      {/* Owner Phone Number */}
       <div>
         <label className="block text-xs font-bold text-pink-900 uppercase mb-1.5">
           Owner Phone Number *

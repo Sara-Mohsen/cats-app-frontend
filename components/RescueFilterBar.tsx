@@ -5,8 +5,8 @@ import { Search, RotateCcw, SlidersHorizontal, ChevronDown } from "lucide-react"
 export interface RescueFilterState {
   search: string;
   city: string;
-  isInjured: string; // 'all' | 'true' | 'false'
-  isRescued: string; // 'all' | 'true' | 'false'
+  isInjured: string;
+  isRescued: string; 
 }
 
 interface RescueFilterBarProps {
@@ -30,7 +30,6 @@ export default function RescueFilterBar({
 
   return (
     <div className="w-full bg-white/30 backdrop-blur-md border border-white/40 rounded-3xl p-4 md:p-6 shadow-lg mt-6 mb-10 transition-all">
-      {/* الصف العلوي: البحث + زر إظهار/إخفاء الفلاتر */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -62,10 +61,8 @@ export default function RescueFilterBar({
         </button>
       </div>
 
-      {/* قسم الفلاتر المنبثقة */}
       {showFilters && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-white/30 transition-all duration-300">
-          {/* فلتر المدينة */}
           <select
             value={filters.city}
             onChange={(e) => handleChange("city", e.target.value)}
@@ -79,7 +76,6 @@ export default function RescueFilterBar({
             ))}
           </select>
 
-          {/* فلتر حالة الإصابة */}
           <select
             value={filters.isInjured}
             onChange={(e) => handleChange("isInjured", e.target.value)}
@@ -90,7 +86,6 @@ export default function RescueFilterBar({
             <option value="false">Healthy / Healthy Status 🐾</option>
           </select>
 
-          {/* فلتر حالة الإنقاذ */}
           <select
             value={filters.isRescued}
             onChange={(e) => handleChange("isRescued", e.target.value)}
@@ -101,7 +96,6 @@ export default function RescueFilterBar({
             <option value="true">Rescued ✅</option>
           </select>
 
-          {/* زر إعادة الضبط */}
           <button
             onClick={onReset}
             className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 bg-pink-500/40 hover:bg-pink-400 text-white font-medium text-sm py-2.5 px-4 rounded-2xl transition-all shadow-md active:scale-95"

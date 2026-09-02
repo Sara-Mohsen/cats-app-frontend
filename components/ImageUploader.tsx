@@ -33,6 +33,7 @@ export default function ImageUploader({
               alt="Preview"
               fill
               className="object-cover"
+              unoptimized
             />
           </div>
         ) : (

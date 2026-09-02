@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -24,12 +26,10 @@ export default function Footer() {
 
   return (
     <footer className="w-full dir-ltr font-sans text-slate-800 p-4 md:p-8 flex justify-center items-center">
-      {/* Main Glassmorphism Card */}
       <div className="w-full max-w-5xl backdrop-blur-md bg-white/30 border border-white/60 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 relative z-10 text-left">
           
-          {/* Logo & Description (أخذ 6 أعمدة من أصل 12) */}
           <div className="md:col-span-6 flex flex-col justify-start space-y-3">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 shrink-0">
@@ -50,7 +50,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links (مباشرة بجانب Contact Us - أخذ 3 أعمدة) */}
           <div className="md:col-span-3 flex flex-col space-y-3">
             <h3 className="text-lg font-bold text-white drop-shadow-sm mb-1">Quick Links</h3>
             <ul className="space-y-2 text-sm text-pink-900 font-medium">
@@ -79,11 +78,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Us (على أقصى اليمين - أخذ 3 أعمدة) */}
           <div className="md:col-span-3 flex flex-col space-y-3">
             <h3 className="text-lg font-bold text-white drop-shadow-sm mb-1">Contact Us</h3>
             
-            {/* Social Icons */}
             <div className="flex items-center gap-3 pt-1 text-pink-900">
               <a href="https://wa.me/0566730167" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="WhatsApp">
                 <FaWhatsapp />
@@ -102,7 +99,6 @@ export default function Footer() {
 
         </div>
 
-        {/* Divider & Copyright */}
         <div className="mt-10 pt-6 border-t border-slate-600/10 flex flex-col sm:flex-row justify-between items-center text-xs text-pink-900 font-medium gap-2">
           <p className="drop-shadow-sm">© 2026 Cat Gallery. All rights reserved.</p>
           <p className="flex items-center gap-1 drop-shadow-sm">

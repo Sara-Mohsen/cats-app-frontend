@@ -3,80 +3,87 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MoreVertical, Pencil, Trash2, CheckCircle2, RotateCcw } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { deletePostApi, updatePostStatusApi } from "@/lib/api/posts";
 
 type OptionsMenuProps = {
   postId: string | number;
+  ownerId?: number;
   postType: "normal" | "adoption" | "rescue";
-  isDone?: boolean; // isAdopted أو isRescued
+  isDone?: boolean;
   onToggleStatus?: (newStatus: boolean) => void;
   onDeleteSuccess?: () => void;
 };
 
 export default function OptionsMenu({
   postId,
+  ownerId,
   postType,
   isDone = false,
-  onToggleStatus,
+  onToggleStatus, 
   onDeleteSuccess,
 }: OptionsMenuProps) {
+  const { user, token } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // 1. التوجيه لصفحة التعديل مع نوع البوست والـ ID
+  const isOwner = user && ownerId && Number(user.id) === Number(ownerId);
+
+  if (!isOwner) {
+    return null; 
+  }
+ 
   const handleEdit = () => {
-  setShowMenu(false);
-  // التوجيه لصفحة التعديل الصريحة مع تمرير الـ ID والـ Type
-  router.push(`/edit/${postId}?type=${postType}`);
-};
-
-
-  // 2. التبديل بين حالة التبني/الإنقاذ وإلغائها
-  const handleToggleStatus = async () => {
     setShowMenu(false);
-    const newStatus = !isDone;
-
-    try {
-      // 👈 هنا يتم إرسال الطلب لقاعدة البيانات مستقبلاً
-      // await fetch(`/api/posts/${postId}`, { method: 'PATCH', body: JSON.stringify({ isDone: newStatus }) });
-      
-      if (onToggleStatus) onToggleStatus(newStatus);
-
-      const statusText =
-        postType === "rescue"
-          ? newStatus ? "Rescued! 🎉" : "Unrescued"
-          : newStatus ? "Adopted! 🎉" : "Unadopted";
-
-      alert(`Post marked as ${statusText}`);
-    } catch (error) {
-      alert("Failed to update status.");
-    }
+    router.push(`/edit/${postId}?type=${postType}`);
   };
 
-  // 3. الحذف مع جهوزية الربط بقاعدة البيانات
-  const handleDelete = async () => {
+  const handleToggleStatus = async () => {
     setShowMenu(false);
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    const newIsDone = !isDone;
+    const statusValue: "ACTIVE" | "CLOSED" = newIsDone ? "CLOSED" : "ACTIVE"; 
 
     try {
       setLoading(true);
-      // 👈 هنا يتم إرسال طلب الحذف لقاعدة البيانات مستقبلاً
-      // await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
 
-      alert("Post deleted successfully!");
-      if (onDeleteSuccess) {
-        onDeleteSuccess();
-      } else {
-        router.push("/"); // العودة للرئيسية
+      if (token) {
+        await updatePostStatusApi(postId, statusValue, token); 
       }
+
+      if (onToggleStatus) {
+        onToggleStatus(newIsDone);
+      }
+
+      const statusText =
+        postType === "rescue"
+          ? newIsDone ? "Rescued! 🎉" : "Unrescued"
+          : newIsDone ? "Adopted! 🎉" : "Unadopted";
+
+      alert(`Post marked as ${statusText}`);
     } catch (error) {
-      alert("Failed to delete post.");
+      console.error("Error updating status:", error);
+      alert("Failed to update status.");
     } finally {
       setLoading(false);
     }
   };
 
-  // مسميات الزر بناءً على نوع البوست والحالة الحالية
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      if (token) {
+        await deletePostApi(postId, token);
+        alert("Post deleted successfully!");
+        if (onDeleteSuccess) onDeleteSuccess();
+        else router.push("/");
+      }
+    } catch (error) {
+      alert("Failed to delete post.");
+    }
+  };
+
   const statusLabel =
     postType === "rescue"
       ? isDone ? "Mark as Unrescued" : "Mark as Rescued"
@@ -95,29 +102,29 @@ export default function OptionsMenu({
       </button>
 
       {showMenu && (
-        <>
+        <> 
           <div
             className="fixed inset-0 z-10"
             onClick={() => setShowMenu(false)}
           />
 
           <div className="absolute top-12 right-0 z-20 w-48 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* ✏️ التعديل */}
             <button
               onClick={handleEdit}
-              className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-700 flex items-center gap-2.5 transition"
+              disabled={loading}
+              className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-700 flex items-center gap-2.5 transition disabled:opacity-50"
             >
               <Pencil size={16} className="text-pink-400" />
               <span>Edit Post</span>
             </button>
 
-            {/* 🎀 زر التغيير الديناميكي (يتغير للون الوردي عند الإلغاء) */}
             {postType !== "normal" && (
               <button
                 onClick={handleToggleStatus}
-                className={`w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2.5 transition ${
+                disabled={loading}
+                className={`w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2.5 transition disabled:opacity-50 ${
                   isDone
-                    ? "text-pink-600 hover:bg-pink-50" // لون زهري عند الإلغاء
+                    ? "text-pink-600 hover:bg-pink-50" 
                     : "text-purple-700 hover:bg-purple-50"
                 }`}
               >
@@ -130,10 +137,10 @@ export default function OptionsMenu({
               </button>
             )}
 
-            {/* 🗑️ الحذف */}
             <button
               onClick={handleDelete}
-              className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition border-t border-pink-50 mt-1 pt-2.5"
+              disabled={loading}
+              className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition border-t border-pink-50 mt-1 pt-2.5 disabled:opacity-50"
             >
               <Trash2 size={16} className="text-red-500" />
               <span>Delete Post</span>

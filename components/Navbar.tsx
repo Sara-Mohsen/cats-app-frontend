@@ -12,7 +12,7 @@ export default function Navbar() {
   const navRef = useRef<HTMLElement>(null); 
 
   const pathname = usePathname();
-  const hideNavbarPaths = ["/login", "/sign", "/details", "/create", "/dashboard"];
+  const hideNavbarPaths = ["/login", "/sign", "/details", "/create", "/dashboard", "/my-posts", "/favorite", "/profile", "/notifications", ];
   const shouldHideNavbar = hideNavbarPaths.includes(pathname) || pathname.startsWith("/details/",) || pathname.startsWith("/rescue/") || pathname.startsWith("/adopt/")|| pathname.startsWith("/edit/");
 
   useEffect(() => {

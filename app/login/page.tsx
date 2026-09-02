@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Image from 'next/image';
-import Link from 'next/link'; // 👈 استيراد Link للتنقل بين الصفحات
-import { User, Lock, Eye, EyeOff, ArrowRight, Cat, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { User, Lock, Eye, EyeOff, ArrowRight, Cat } from 'lucide-react';
 import { useRouter } from "next/navigation"; 
+import { useAuth } from '../context/AuthContext';
+import { loginApi } from "@/lib/api/posts";
 
 
 interface LoginFormData {
@@ -21,31 +23,39 @@ const LoginPage: React.FC = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({
-      ...prev,
+      ...prev, 
       [name]: value,
     }));
   };
+
+  const { login } = useAuth();
   const router = useRouter();
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Logging in with:', formData);
+    try {
+      const res = await loginApi({
+        login: formData.username,
+        password: formData.password,
+      });
+      
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+      }
+
+      login(res.token, res.user);
+      router.push("/"); 
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Invalid login credentials");
+    }
   };
 
   return (
     <div className="min-h-screen w-full  flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all">
         <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
-
-          {/* Back Button */}
-        <div className="p-4 sm:p-4 pb-0 flex items-center justify-between">
-          <Link
-            onClick={() => router.back()}
-            href="/"
-            className="flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-900 bg-white/60 hover:bg-white/90 px-4 py-2 rounded-2xl border border-pink-100 transition shadow-xs"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-        </div>
+        <div className="p-4 sm:p-4 pb-0 flex items-center justify-between" />
+  
         <div className="p-8 sm:p-10 pt-1 sm:px-10 sm:pb-10 sm:pt-1 flex flex-col items-center">
           <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center shadow-inner mb-4 border border-pink-100">
             <Image
@@ -109,7 +119,6 @@ const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* 👈 النص والرابط الجديد لإنشاء حساب */}
           <p className="mt-4 text-xs text-pink-600 font-medium">
             Don&apos;t have an account?{' '}
             <Link 

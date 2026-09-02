@@ -11,45 +11,50 @@ import {
 } from "lucide-react";
 
 export type CatDetailsType = {
-  name: string;
-  breed: string;
-  age: string | number;
-  city: string;
-  gender: string;
-  isNeutered: boolean;
-  isVaccinated: boolean;
-  personality: string;
-  phone?: string; // 👈 اختياري لبورسات التبني
+  name?: string | null;
+  breed?: string | null; 
+  age?: string | number | null;
+  city?: string | null;
+  gender?: string | null;
+  isNeutered?: boolean | null;
+  isVaccinated?: boolean | null;
+  personality?: string | null;
+  phone?: string | null;
 };
 
-export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
+export default function CatDetailsInfo({ cat }: { cat?: CatDetailsType }) {
+  const safeCat = cat || {
+    name: "Unknown Cat",
+    city: "Unknown",
+    breed: "Unknown",
+    age: "N/A",
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-pink-100 pb-4">
         <div>
           <h1 className="text-3xl font-extrabold text-pink-950 flex items-center gap-2">
-            {cat.name}
+            {safeCat.name ?? "Unknown Cat"}
           </h1>
           <div className="flex items-center gap-2 text-pink-600 font-medium text-sm mt-1">
             <MapPin size={16} className="text-pink-400" />
-            <span>{cat.city}</span>
+            <span>{safeCat.city ?? "Unknown"}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <span className="inline-flex items-center gap-1.5 bg-pink-50 border border-pink-200 text-pink-800 text-xs font-semibold px-3 py-1.5 rounded-xl">
             <PawPrint size={14} className="text-pink-500" />
-            {cat.breed}
+            {safeCat.breed ?? "Unknown"}
           </span>
           <span className="inline-flex items-center gap-1.5 bg-purple-50 border border-purple-200 text-purple-800 text-xs font-semibold px-3 py-1.5 rounded-xl">
             <Cake size={14} className="text-purple-500" />
-            {cat.age}
+            {typeof safeCat.age === "number" ? `${safeCat.age} Years` : safeCat.age ?? "N/A"}
           </span>
         </div>
       </div>
 
-      {/* Grid Features */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="bg-white/70 p-3.5 rounded-2xl border border-pink-100 flex items-center gap-3">
           <div className="p-2.5 bg-pink-100/60 rounded-xl text-pink-600">
@@ -57,7 +62,7 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           </div>
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Breed</p>
-            <p className="text-sm font-bold text-gray-800">{cat.breed}</p>
+            <p className="text-sm font-bold text-gray-800">{safeCat.breed ?? "Unknown"}</p>
           </div>
         </div>
 
@@ -67,7 +72,9 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           </div>
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Age</p>
-            <p className="text-sm font-bold text-gray-800">{cat.age}</p>
+            <p className="text-sm font-bold text-gray-800">
+              {typeof safeCat.age === "number" ? `${safeCat.age} Years` : safeCat.age ?? "N/A"}
+            </p>
           </div>
         </div>
 
@@ -77,7 +84,7 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           </div>
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">City</p>
-            <p className="text-sm font-bold text-gray-800">{cat.city}</p>
+            <p className="text-sm font-bold text-gray-800">{safeCat.city ?? "Unknown"}</p>
           </div>
         </div>
 
@@ -87,7 +94,7 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           </div>
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Gender</p>
-            <p className="text-sm font-bold text-gray-800">{cat.gender}</p>
+            <p className="text-sm font-bold text-gray-800">{safeCat.gender ?? "Unknown"}</p>
           </div>
         </div>
 
@@ -98,7 +105,11 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Neutered</p>
             <p className="text-sm font-bold text-gray-800">
-              {cat.isNeutered ? "Yes" : "No"}
+              {safeCat.isNeutered === null || safeCat.isNeutered === undefined
+                ? "N/A"
+                : safeCat.isNeutered
+                ? "Yes"
+                : "No"}
             </p>
           </div>
         </div>
@@ -110,13 +121,16 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
           <div>
             <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Vaccinated</p>
             <p className="text-sm font-bold text-gray-800">
-              {cat.isVaccinated ? "Yes" : "No"}
+              {safeCat.isVaccinated === null || safeCat.isVaccinated === undefined
+                ? "N/A"
+                : safeCat.isVaccinated
+                ? "Yes"
+                : "No"}
             </p>
           </div>
         </div>
 
-        {/* 👈 ظهور رقم الهاتف إذا كان موجوداً */}
-        {cat.phone && (
+        {safeCat.phone && (
           <div className="bg-white/70 p-3.5 rounded-2xl border border-pink-100 flex items-center gap-3 col-span-2 sm:col-span-3">
             <div className="p-2.5 bg-pink-100/60 rounded-xl text-pink-600">
               <Phone size={20} />
@@ -125,21 +139,20 @@ export default function CatDetailsInfo({ cat }: { cat: CatDetailsType }) {
               <p className="text-[11px] font-bold text-pink-400 uppercase tracking-wider">
                 Owner Contact
               </p>
-              <p className="text-sm font-bold text-gray-800">{cat.phone}</p>
+              <p className="text-sm font-bold text-gray-800">{safeCat.phone}</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Personality */}
       <div className="bg-pink-50/60 border border-pink-100 rounded-2xl p-4 sm:p-5">
         <h3 className="text-xs font-bold text-pink-900 uppercase tracking-wider flex items-center gap-2 mb-2">
           <HeartHandshake size={18} className="text-pink-500" />
           <span>Personality & Description</span>
         </h3>
         <p className="text-sm text-gray-700 leading-relaxed font-medium">
-          {cat.personality}
-        </p>
+          {safeCat.personality ?? "No description provided."}
+        </p> 
       </div>
     </div>
   );

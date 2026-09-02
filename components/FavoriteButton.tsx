@@ -2,28 +2,49 @@
 
 import React, { useState } from "react";
 import { Heart } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toggleLikeApi } from "@/lib/api/posts";
 
 type FavoriteButtonProps = {
+  postId: string | number;
   initialFavorite?: boolean;
   onToggle?: (isFav: boolean) => void;
 };
 
 export default function FavoriteButton({
+  postId,
   initialFavorite = false,
-  onToggle,
+  onToggle, 
 }: FavoriteButtonProps) {
-  const [isFavorite, setIsFavorite] = useState(initialFavorite);
+  const { token, isAuthenticated } = useAuth();
+  const router = useRouter();
 
-  const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault(); // منع الانتقال للرابط عند النقر
+  const [isLikedLocally, setIsLikedLocally] = useState<boolean | null>(null);
+  const isFavorite = isLikedLocally !== null ? isLikedLocally : initialFavorite;
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault(); 
     e.stopPropagation();
-    
+
+    if (!isAuthenticated || !token) {
+      alert("Please log in to like this post! 🐾");
+      router.push("/login");
+      return;
+    }
+
     const newState = !isFavorite;
-    setIsFavorite(newState);
-    if (onToggle) onToggle(newState);
+    setIsLikedLocally(newState);
+    
+    try {
+      await toggleLikeApi(postId, token);
+      if (onToggle) onToggle(newState);
+    } catch (error) {
+      setIsLikedLocally(!newState); 
+    }
   };
 
-  return (
+  return ( 
     <button
       type="button"
       onClick={toggleFavorite}

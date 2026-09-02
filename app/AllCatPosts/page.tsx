@@ -1,12 +1,14 @@
 "use client";
-import React, { useState, useMemo } from "react";
+
+import React, { useState, useEffect, useMemo } from "react";
 import Cards from "../../components/Cards";
-import { pics, CatDetails } from "../../lib/data";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import FilterBar, { FilterState } from "../../components/FilterBar";
 import Pagination from "../../components/Pagination";
+import { getPosts, Post } from "@/lib/api/posts";
+import { useAuth } from "@/app/context/AuthContext"; 
 
-const POSTS_PER_PAGE = 3; // يمكنك تعديل عدد البوستات في الصفحة
+const POSTS_PER_PAGE = 3; 
 
 const initialFilters: FilterState = {
   search: "",
@@ -17,43 +19,63 @@ const initialFilters: FilterState = {
 };
 
 export default function AllCatPosts() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // استخراج القوائم الديناميكية للفصائل والمدن من البيانات مباشرة
-  const uniqueBreeds = useMemo(
-    () => Array.from(new Set(pics.map((c) => c.breed))),
-    []
-  );
-  const uniqueCities = useMemo(
-    () => Array.from(new Set(pics.map((c) => c.city))),
-    []
-  );
+  const { token } = useAuth();
 
-  // منطق الفلترة المتقدمة
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        setLoading(true);
+        const data = await getPosts("NORMAL", token ?? undefined);
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, [token]);
+
+  const uniqueBreeds = useMemo(() => {
+    const breeds = posts
+      .map((p) => p.breed?.name)
+      .filter((b): b is string => Boolean(b));
+    return Array.from(new Set(breeds));
+  }, [posts]);
+
+  const uniqueCities = useMemo(() => {
+    const cities = posts
+      .map((p) => p.city?.name)
+      .filter((c): c is string => Boolean(c));
+    return Array.from(new Set(cities));
+  }, [posts]);
+
   const filteredCats = useMemo(() => {
-    return pics.filter((cat: CatDetails) => {
-      // البحث بالنص (الاسم أو الشخصية)
+    return posts.filter((cat) => {
+      const catName = cat.name ?? "";
+      const catPersonality = cat.personality ?? "";
       const matchesSearch =
         filters.search === "" ||
-        cat.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        cat.personality.toLowerCase().includes(filters.search.toLowerCase());
+        catName.toLowerCase().includes(filters.search.toLowerCase()) ||
+        catPersonality.toLowerCase().includes(filters.search.toLowerCase());
 
-      // فلتر الفصيلة
       const matchesBreed =
-        filters.breed === "all" || cat.breed === filters.breed;
+        filters.breed === "all" || cat.breed?.name === filters.breed;
 
-      // فلتر المدينة
-      const matchesCity = filters.city === "all" || cat.city === filters.city;
+      const matchesCity = 
+        filters.city === "all" || cat.city?.name === filters.city;
 
-      // فلتر الجنس
       const matchesGender =
         filters.gender === "all" || cat.gender === filters.gender;
 
-      // فلتر التعقيم
       const matchesNeutered =
         filters.isNeutered === "all" ||
-        String(cat.isNeutered) === filters.isNeutered;
+        String(cat.is_neutered) === filters.isNeutered;
 
       return (
         matchesSearch &&
@@ -63,9 +85,8 @@ export default function AllCatPosts() {
         matchesNeutered
       );
     });
-  }, [filters]);
+  }, [posts, filters]);
 
-  // اعادة تعيين الصفحة إلى 1 عند تغيير أي فلتر
   const handleFilterChange = (
     newFilters: React.SetStateAction<FilterState>
   ) => {
@@ -78,10 +99,9 @@ export default function AllCatPosts() {
     setCurrentPage(1);
   };
 
-  // اقتطاع البيانات حسب رقم الصفحة (Pagination Logic)
   const totalPages = Math.ceil(filteredCats.length / POSTS_PER_PAGE);
   const displayedPosts = useMemo(() => {
-  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
     return filteredCats.slice(startIndex, startIndex + POSTS_PER_PAGE);
   }, [filteredCats, currentPage]);
 
@@ -91,13 +111,11 @@ export default function AllCatPosts() {
       id="all-posts-section"
     >
       <div className="posts-container max-w-7xl mx-auto">
-        {/* عنوان الصفحة */}
         <h2 className="posts-title Albert_Sans text-4xl md:text-5xl font-extrabold text-white flex items-center gap-2 mb-8">
           <Sparkles className="w-[1em] h-[1em] text-pink-300" />
           All Cats & Posts
         </h2>
 
-        {/* شريط البحث والفلاتر */}
         <FilterBar
           filters={filters}
           setFilters={handleFilterChange}
@@ -106,11 +124,24 @@ export default function AllCatPosts() {
           onReset={handleReset}
         />
 
-        {/* عرض الشبكة أو رسالة عدم وجود نتائج */}
-        {displayedPosts.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-white">
+            <Loader2 className="w-10 h-10 animate-spin text-pink-300 mb-3" />
+            <p className="text-lg font-medium">Loading cats...</p>
+          </div>
+        ) : displayedPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayedPosts.map((post) => (
-              <Cards key={post.id} {...post} />
+              <Cards
+                key={post.id}
+                id={post.id}
+                name={post.name ?? "Unknown"}
+                breed={post.breed?.name ?? "Unknown"}
+                age={post.age ? `${post.age} Years` : "N/A"}
+                city={post.city?.name ?? "Unknown"}
+                image={post.image}
+                isLiked={post.is_liked}
+              />
             ))}
           </div>
         ) : (
@@ -119,7 +150,6 @@ export default function AllCatPosts() {
           </div>
         )}
 
-        {/* الترقيم العصري */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
