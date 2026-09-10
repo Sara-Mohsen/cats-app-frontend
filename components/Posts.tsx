@@ -7,6 +7,8 @@ import Link from "next/link";
 import { getPosts, Post } from "../lib/api/posts";
 import { useAuth } from "@/app/context/AuthContext";
 
+const MAX_POSTS_TO_SHOW = 5;
+
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,8 @@ export default function Posts() {
     fetchPosts();
   }, [token]);
 
+  const visiblePosts = posts.slice(0, MAX_POSTS_TO_SHOW);
+
   return (
     <section className="posts-section" id="latest-posts">
       <div className="posts-container">
@@ -42,7 +46,7 @@ export default function Posts() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
+            {visiblePosts.map((post) => (
               <Cards
                 key={post.id} 
                 id={post.id}
@@ -55,7 +59,7 @@ export default function Posts() {
               />
             ))}
           </div>
-        )}
+        )} 
 
         <div className="flex justify-center mt-10">
           <Link
@@ -69,4 +73,4 @@ export default function Posts() {
       </div>
     </section>
   );
-} 
+}

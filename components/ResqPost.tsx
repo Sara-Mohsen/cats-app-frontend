@@ -7,6 +7,8 @@ import Link from "next/link";
 import { getPosts, Post } from "../lib/api/posts";
 import { useAuth } from "@/app/context/AuthContext";
 
+const MAX_POSTS_TO_SHOW = 5;
+
 export default function RescuePost() {
   const [rescuePosts, setRescuePosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,8 @@ export default function RescuePost() {
     fetchRescuePosts();
   }, [token]);
 
+  const visiblePosts = rescuePosts.slice(0, MAX_POSTS_TO_SHOW);
+
   return (
     <section className="posts-section">
       <div className="posts-container">
@@ -41,7 +45,7 @@ export default function RescuePost() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {rescuePosts.map((post) => (
+            {visiblePosts.map((post) => (
               <RescueCard
                 key={post.id} 
                 id={post.id}
@@ -51,7 +55,7 @@ export default function RescuePost() {
                 isRescued={post.status === "CLOSED"}
                 isLiked={post.is_liked}
               />
-            ))}
+            ))} 
           </div>
         )}   
 

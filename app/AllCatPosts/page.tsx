@@ -8,7 +8,7 @@ import Pagination from "../../components/Pagination";
 import { getPosts, Post } from "@/lib/api/posts";
 import { useAuth } from "@/app/context/AuthContext"; 
 
-const POSTS_PER_PAGE = 3; 
+const POSTS_PER_PAGE = 6; 
 
 const initialFilters: FilterState = {
   search: "",

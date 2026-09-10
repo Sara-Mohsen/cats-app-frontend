@@ -94,6 +94,18 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  
+  const [activeUserNotifId, setActiveUserNotifId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (activeUserNotifId && !(event.target as HTMLElement).closest('.relative')) {
+        setActiveUserNotifId(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [activeUserNotifId]);
 
   useEffect(() => {
     async function fetchNotifications() {
@@ -103,7 +115,7 @@ export default function NotificationsPage() {
         router.push("/login");
         return;
       }
-
+ 
       try {
         const data = await getNotificationsApi(token);
         const rawList = Array.isArray(data) ? data : data.notifications || data.data || [];
@@ -217,6 +229,10 @@ export default function NotificationsPage() {
     }
   };
 
+  const toggleUserCard = (id: string) => {
+    setActiveUserNotifId((prev) => (prev === id ? null : id));
+  };
+
   const getPostLink = (postId: string, postType: string) => {
     if (!postId || postId === "undefined" || postId === "null") return "#";
     if (postType.includes("rescue")) {
@@ -273,7 +289,6 @@ export default function NotificationsPage() {
               <div className="flex flex-col gap-3">
                 {currentNotifs.map((notif) => {
                   const lowerText = notif.text.toLowerCase();
-                  // التأكد ما إذا كان الإشعار مجرد نتيجة (رد) للطلب وليس طلب ينتظر القرار
                   const isResultNotification = lowerText.includes("accepted") || lowerText.includes("declined") || lowerText.includes("rejected");
 
                   return (
@@ -288,14 +303,34 @@ export default function NotificationsPage() {
 
                         <div className="text-sm">
                           <div className="relative inline-block group">
-                            <span className="font-bold text-pink-950 underline decoration-pink-300 decoration-2 underline-offset-2 cursor-pointer">
+                            <button
+                              type="button"
+                              onClick={() => toggleUserCard(notif.id)}
+                              className="font-bold text-pink-950 underline decoration-pink-300 decoration-2 underline-offset-2 cursor-pointer bg-transparent border-0 p-0 text-left"
+                            >
                               {notif.user.name}
-                            </span>
+                            </button>
 
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:flex flex-col gap-1.5 p-3 w-56 bg-white/95 backdrop-blur-xl rounded-xl border border-pink-100 shadow-xl z-50 text-xs animate-in fade-in zoom-in-95 duration-150">
-                              <div className="flex items-center gap-2 text-pink-950 font-semibold border-b border-gray-100 pb-1.5">
-                                <User size={14} className="text-pink-600" />
-                                <span>{notif.user.name}</span>
+                            <div
+                              className={`absolute left-0 bottom-full mb-2 flex-col gap-1.5 p-3 w-56 bg-white/95 backdrop-blur-xl rounded-xl border border-pink-100 shadow-xl z-50 text-xs animate-in fade-in zoom-in-95 duration-150 ${
+                                activeUserNotifId === notif.id ? "flex" : "hidden group-hover:flex"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between border-b border-gray-100 pb-1.5">
+                                <div className="flex items-center gap-2 text-pink-950 font-semibold">
+                                  <User size={14} className="text-pink-600" />
+                                  <span>{notif.user.name}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveUserNotifId(null);
+                                  }}
+                                  className="text-gray-400 hover:text-gray-600 sm:hidden"
+                                >
+                                  <X size={12} />
+                                </button>
                               </div>
                               <div className="flex items-center gap-2 text-gray-600">
                                 <Mail size={12} className="text-gray-400" />
@@ -325,7 +360,6 @@ export default function NotificationsPage() {
 
                       {(notif.type === "adoption" || notif.type === "rescue") && (
                         <div className="flex items-center gap-2 self-end sm:self-center">
-                          {/* إذا كان الإشعار نتيجة رد، يظهر Badge فقط بدون أزرار */}
                           {isResultNotification ? (
                             <span
                               className={`text-xs px-3 py-1 rounded-full font-bold border ${

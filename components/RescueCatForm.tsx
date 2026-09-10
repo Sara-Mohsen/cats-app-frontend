@@ -20,12 +20,26 @@ type RescueCatFormProps = {
   loading?: boolean;
 };
 
+const SAUDI_PHONE_REGEX = /^05\d{8}$/;
+
+export function isValidSaudiPhone(phone: string): boolean {
+  return SAUDI_PHONE_REGEX.test(phone.trim());
+}
+
 export default function RescueCatForm({
   data,
   onChange,
   cities,
   loading = false,
 }: RescueCatFormProps) {
+  const phoneTouched = data.phoneNumber.length > 0;
+  const phoneValid = isValidSaudiPhone(data.phoneNumber);
+
+  const handlePhoneChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
+    onChange({ ...data, phoneNumber: digitsOnly });
+  };
+
   return (
     <div className="space-y-4">
       {data.rescueId && (
@@ -119,13 +133,24 @@ export default function RescueCatForm({
           <Phone size={18} className="absolute left-3.5 top-3 text-pink-400" />
           <input
             type="tel"
+            inputMode="numeric"
             value={data.phoneNumber}
-            onChange={(e) => onChange({ ...data, phoneNumber: e.target.value })}
+            onChange={(e) => handlePhoneChange(e.target.value)}
             placeholder="05XXXXXXXX"
-            className="w-full pl-10 pr-4 py-2.5 bg-white/80 border border-pink-200 rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            maxLength={10}
+            className={`w-full pl-10 pr-4 py-2.5 bg-white/80 border rounded-xl text-gray-700 text-sm focus:outline-none focus:ring-2 ${
+              phoneTouched && !phoneValid
+                ? "border-red-300 focus:ring-red-400"
+                : "border-pink-200 focus:ring-pink-400"
+            }`}
             required
           />
         </div>
+        {phoneTouched && !phoneValid && (
+          <p className="text-xs text-red-500 mt-1 px-1">
+            Please enter a valid Saudi phone number (e.g., 05XXXXXXXX).
+          </p>
+        )}
       </div>
     </div>
   );

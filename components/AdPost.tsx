@@ -7,6 +7,9 @@ import Link from "next/link";
 import { getPosts, Post } from "../lib/api/posts";
 import { useAuth } from "@/app/context/AuthContext";
 
+const MAX_POSTS_TO_SHOW = 5;
+
+
 export default function AdPost() {
   const [adoptionPosts, setAdoptionPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +27,11 @@ export default function AdPost() {
         setLoading(false);
       }
     }
-    fetchAdoptionPosts();
+    fetchAdoptionPosts(); 
   }, [token]);
+
+  const visiblePosts = adoptionPosts.slice(0, MAX_POSTS_TO_SHOW);
+
 
   return (
     <section className="posts-section" id="latest-posts">
@@ -41,7 +47,7 @@ export default function AdPost() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {adoptionPosts.map((post) => (
+            {visiblePosts.map((post) => (
               <AdCards
                 key={post.id} 
                 id={post.id}

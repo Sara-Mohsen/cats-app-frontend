@@ -57,6 +57,7 @@ export type CommentType = {
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
+
 export async function getPosts(type?: "NORMAL" | "ADOPTION" | "RESCUE", token?: string): Promise<Post[]> {
   const url = type ? `${API_URL}/posts?type=${type}` : `${API_URL}/posts`;
   const headers: HeadersInit = { "Accept": "application/json" };
@@ -103,6 +104,8 @@ export async function sendAdoptionRequestApi(postId: number | string, token: str
       "Authorization": `Bearer ${token}`,
       "Accept": "application/json",
     },
+    // تم التعديل: إرسال الـ type بحروف صغيرة تفادياً لخطأ Data Truncated
+    body: JSON.stringify({ type: "adoption" }),
   });
 
   const resData = await response.json();
@@ -120,6 +123,8 @@ export async function sendRescueRequestApi(postId: number | string, token: strin
       "Authorization": `Bearer ${token}`,
       "Accept": "application/json",
     },
+    // تم التعديل: إرسال الـ type بحروف صغيرة تفادياً لخطأ Data Truncated
+    body: JSON.stringify({ type: "rescue" }),
   });
 
   const resData = await response.json();
@@ -417,7 +422,7 @@ export async function updateNotificationStatusApi(id: string, status: string, to
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
     },
-    body: JSON.stringify({ status: status.toUpperCase() }),
+    body: JSON.stringify({ status: status.toLowerCase() }),
   });
 
   const resData = await res.json();

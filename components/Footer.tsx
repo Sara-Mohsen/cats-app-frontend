@@ -82,16 +82,16 @@ export default function Footer() {
             <h3 className="text-lg font-bold text-white drop-shadow-sm mb-1">Contact Us</h3>
             
             <div className="flex items-center gap-3 pt-1 text-pink-900">
-              <a href="https://wa.me/0566730167" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="WhatsApp">
+              <a href="https://wa.me/966566730167" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="WhatsApp">
                 <FaWhatsapp />
               </a>
               <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sarasmr90@gmail.com" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="Mail">
                 <FaMailBulk />
               </a>
-              <a href="https://github.com/Sara-Mohsen/cats-app-frontend" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="GitHub">
+              <a href="https://github.com/Sara-Mohsen" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="GitHub">
                 <FaGithub />
               </a>
-              <a href="https://github.com/Sara-Mohsen" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/sara-mohsen-15108b311" className="hover:text-pink-600 hover:scale-110 drop-shadow-sm transition-all text-xl" aria-label="LinkedIn">
                 <FaLinkedinIn />
               </a>
             </div>

@@ -34,7 +34,9 @@ interface FavoriteItem {
 }
 
 const ITEMS_PER_PAGE = 8;
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+
 const API_BASE_URL = API_URL.replace(/\/api$/, "");
 
 const getStorageUrl = (path?: string | null) => {

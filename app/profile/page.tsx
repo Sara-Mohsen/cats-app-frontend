@@ -41,7 +41,7 @@ export default function ProfilePage() {
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState("");
 
-  const API_URL =
+const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
 const API_BASE_URL = API_URL.replace(/\/api$/, "");

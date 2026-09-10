@@ -99,8 +99,8 @@ export default function AdoptionFilterBar({
             className="bg-white/70 text-gray-700 text-sm font-medium py-2.5 px-3 rounded-2xl border border-white/60 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer shadow-sm"
           >
             <option value="all">All Genders</option>
-            <option value="Male">Male ♂</option>
-            <option value="Female">Female ♀</option>
+            <option value="MALE">Male ♂</option>
+            <option value="FEMALE">Female ♀</option>
           </select>
 
           <select

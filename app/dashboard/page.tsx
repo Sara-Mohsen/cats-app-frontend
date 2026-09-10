@@ -26,7 +26,6 @@ const API_URL =
 
 const API_BASE_URL = API_URL.replace(/\/api$/, "");
 
-
 type UserData = {
   full_name?: string;
   username?: string;
