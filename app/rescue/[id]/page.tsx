@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getPostById, Post } from "@/lib/api/posts";
+import { getPostById, Post, sendRescueRequestApi, getRescueRequestStatusApi,} from "@/lib/api/posts";
 import { useRouter } from "next/navigation"; 
 import HeaderFavoriteButton from "../../../components/HeaderFavoriteButton";
 import OptionsMenu from "../../../components/OptionsMenu";
@@ -20,31 +20,56 @@ export default function RescueDetailsPage({
   const resolvedParams = use(params);
   const router = useRouter();
   
-  // 👈 1. جلب بيانات user الحالية بجانب token
   const { token, user } = useAuth(); 
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [requestLoading, setRequestLoading] = useState<boolean>(false);
   const [isRescued, setIsRescued] = useState<boolean>(false);
+  const [isRequestSent, setIsRequestSent] = useState<boolean>(false);
 
   useEffect(() => {
-    async function fetchRescueCase() {
-      try {
-        setLoading(true);
-        const data = await getPostById(resolvedParams.id, token ?? undefined);
-        if (data) {
-          setPost(data);
-          setIsRescued(data.status === "CLOSED");
-        }
-      } catch (error) {
-        console.error("Error fetching rescue details:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
+  async function fetchCat() {
+    try {
+      setLoading(true);
 
-    fetchRescueCase();
-  }, [resolvedParams.id, token]);
+      const data = await getPostById(
+        resolvedParams.id,
+        token ?? undefined
+      );
+
+      if (data) {
+        setPost(data);
+        setIsRescued(data.status === "CLOSED");
+
+        if (token) {
+          try {
+            const requestStatus = await getRescueRequestStatusApi(
+              data.id,
+              token
+            );
+
+            setIsRequestSent(
+              requestStatus.has_request &&
+              requestStatus.status === "PENDING"
+            );
+          } catch (error) {
+            console.error(
+              "Error fetching rescue request status:",
+              error
+            );
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching cat details:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchCat();
+}, [resolvedParams.id, token]);
 
   if (loading) {
     return (
@@ -87,13 +112,40 @@ export default function RescueDetailsPage({
     phone: post.contact_number ?? "N/A",
   };
 
-  const handleRescueAction = () => {
-    alert(
-      `Thank you for offering to rescue ${formattedId}! Please contact the owner at ${rescueData.phone}`
-    );
-  };
+  const handleRescueAction = async () => {
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+  
+      if (requestLoading || isRequestSent || isRescued) {
+        return;
+      }
+  
+      setRequestLoading(true);
+  
+      try {
+        await sendRescueRequestApi(post.id, token);
+  
+        setIsRequestSent(true);
+  
+        alert(
+          `Your rescue request for ${post.name || "this cat"} has been sent successfully! 🐾`
+        );
+      } catch (error) {
+        console.error("Error sending rescue request:", error);
+  
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to send rescue request.";
+  
+        alert(message);
+      } finally {
+        setRequestLoading(false);
+      }
+    };
 
-  // 👈 2. التحقق من شرط الملكية (مع التأكد من تحويل المعرفات لنفس النوع سواء String أو Number)
   const isOwner = Boolean(user?.id && post.user?.id && String(user.id) === String(post.user.id));
 
   return (
@@ -136,6 +188,8 @@ export default function RescueDetailsPage({
               rescueData={rescueData}
               isRescued={isRescued}
               isOwner={isOwner}
+              isRequestSent={isRequestSent}
+              requestLoading={requestLoading}
               onRescueAction={handleRescueAction}
             />
           </div>
@@ -146,4 +200,4 @@ export default function RescueDetailsPage({
       </div>
     </div>
   );
-} 
+}

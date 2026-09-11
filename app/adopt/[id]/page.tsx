@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { getPostById, Post } from "@/lib/api/posts";
+import { getPostById, Post, sendAdoptionRequestApi, getAdoptionRequestStatusApi, } from "@/lib/api/posts";
 import { useRouter } from "next/navigation"; 
 import HeaderFavoriteButton from "../../../components/HeaderFavoriteButton";
 import OptionsMenu from "../../../components/OptionsMenu";
@@ -25,24 +25,51 @@ export default function AdoptionDetailsPage({
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdopted, setIsAdopted] = useState<boolean>(false);
+  const [isRequestSent, setIsRequestSent] = useState(false);
+  const [requestLoading, setRequestLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchCat() {
-      try {
-        setLoading(true);
-        const data = await getPostById(resolvedParams.id, token ?? undefined);
-        if (data) {
-          setPost(data);
-          setIsAdopted(data.status === "CLOSED");
+  async function fetchCat() {
+    try {
+      setLoading(true);
+
+      const data = await getPostById(
+        resolvedParams.id,
+        token ?? undefined
+      );
+
+      if (data) {
+        setPost(data);
+        setIsAdopted(data.status === "CLOSED");
+
+        if (token) {
+          try {
+            const requestStatus = await getAdoptionRequestStatusApi(
+              data.id,
+              token
+            );
+
+            setIsRequestSent(
+              requestStatus.has_request &&
+              requestStatus.status === "PENDING"
+            );
+          } catch (error) {
+            console.error(
+              "Error fetching adoption request status:",
+              error
+            );
+          }
         }
-      } catch (err) {
-        console.error("Error fetching cat details:", err);
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error("Error fetching cat details:", err);
+    } finally {
+      setLoading(false);
     }
-    fetchCat();
-  }, [resolvedParams.id, token]);
+  }
+
+  fetchCat();
+}, [resolvedParams.id, token]);
 
   if (loading) {
     return (
@@ -70,8 +97,38 @@ export default function AdoptionDetailsPage({
     );
   }
 
-  const handleAdopt = () => {
-    alert(`Thank you for your interest in adopting ${post.name || "this cat"}! 🐾`);
+  const handleAdopt = async () => {
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    if (requestLoading || isRequestSent || isAdopted) {
+      return;
+    }
+
+    setRequestLoading(true);
+
+    try {
+      await sendAdoptionRequestApi(post.id, token);
+
+      setIsRequestSent(true);
+
+      alert(
+        `Your adoption request for ${post.name || "this cat"} has been sent successfully! 🐾`
+      );
+    } catch (error) {
+      console.error("Error sending adoption request:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to send adoption request.";
+
+      alert(message);
+    } finally {
+      setRequestLoading(false);
+    }
   };
 
   const formattedCatData = {
@@ -129,20 +186,29 @@ export default function AdoptionDetailsPage({
             {!isOwner && (
               <button
                 onClick={handleAdopt}
-                disabled={isAdopted}
+                disabled={isAdopted || isRequestSent || requestLoading}
                 className={`w-full py-4 px-6 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2 ${
-                  isAdopted
+                  isAdopted || isRequestSent || requestLoading
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
                     : "bg-linear-to-r from-pink-400 via-purple-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white hover:shadow-xl transform active:scale-[0.98] cursor-pointer"
                 }`}
-              >
+               >
                 <Sparkles size={20} />
-                <span>{isAdopted ? "Already Adopted" : `Adopt ${post.name ?? "Cat"}`}</span>
+
+                <span>
+                  {isAdopted
+                    ? "Already Adopted"
+                    : isRequestSent
+                    ? "Request Sent"
+                    : requestLoading
+                    ? "Sending..."
+                    : `Adopt ${post.name ?? "Cat"}`}
+                </span>
               </button>
             )}
           </div>
         </div>
-
+ 
         <CommentsSection postId={post.id} postAuthorId={post.user?.id} />
 
       </div>

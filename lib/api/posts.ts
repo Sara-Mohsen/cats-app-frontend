@@ -104,8 +104,6 @@ export async function sendAdoptionRequestApi(postId: number | string, token: str
       "Authorization": `Bearer ${token}`,
       "Accept": "application/json",
     },
-    // تم التعديل: إرسال الـ type بحروف صغيرة تفادياً لخطأ Data Truncated
-    body: JSON.stringify({ type: "adoption" }),
   });
 
   const resData = await response.json();
@@ -123,8 +121,6 @@ export async function sendRescueRequestApi(postId: number | string, token: strin
       "Authorization": `Bearer ${token}`,
       "Accept": "application/json",
     },
-    // تم التعديل: إرسال الـ type بحروف صغيرة تفادياً لخطأ Data Truncated
-    body: JSON.stringify({ type: "rescue" }),
   });
 
   const resData = await response.json();
@@ -414,7 +410,11 @@ export async function getNotificationsApi(token: string) {
   return data.notifications || data.data || data;
 }
 
-export async function updateNotificationStatusApi(id: string, status: string, token: string) {
+export async function updateNotificationStatusApi(
+  id: string,
+  status: string,
+  token: string
+) {
   const res = await fetch(`${API_URL}/notifications/${id}/status`, {
     method: "PATCH",
     headers: {
@@ -422,13 +422,73 @@ export async function updateNotificationStatusApi(id: string, status: string, to
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
     },
-    body: JSON.stringify({ status: status.toLowerCase() }),
+    body: JSON.stringify({
+      status: status.toLowerCase(),
+    }),
   });
 
   const resData = await res.json();
 
   if (!res.ok) {
-    throw new Error(resData.message || "Failed to update notification status");
+    console.error("Notification status error:", resData);
+
+    throw new Error(
+      resData.error ||
+      resData.message ||
+      "Failed to update notification status"
+    );
+  }
+
+  return resData;
+}
+
+export async function getAdoptionRequestStatusApi(
+  postId: number | string,
+  token: string
+) {
+  const response = await fetch(
+    `${API_URL}/posts/${postId}/adoption-request-status`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      resData.message || "Failed to fetch adoption request status"
+    );
+  }
+
+  return resData;
+}
+
+export async function getRescueRequestStatusApi(
+  postId: number | string,
+  token: string
+) {
+  const response = await fetch(
+    `${API_URL}/posts/${postId}/rescue-request-status`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  const resData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      resData.message || "Failed to fetch rescue request status"
+    );
   }
 
   return resData;
