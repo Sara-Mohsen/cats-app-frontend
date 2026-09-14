@@ -3,7 +3,7 @@
 import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import OptionsMenu from "@/components/OptionsMenu";
 import CatDetailsInfo from "@/components/CatDetailsInfo";
 import CommentsSection from "@/components/CommentsSection";
@@ -24,7 +24,7 @@ export default function CatDetailsPage({
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
- 
+
   useEffect(() => {
     async function fetchCatDetails() {
       try {
@@ -63,7 +63,9 @@ export default function CatDetailsPage({
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
         <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl text-center shadow-xl border border-white/40">
-          <h2 className="text-2xl font-bold text-pink-950 mb-2">Cat Not Found</h2>
+          <h2 className="text-2xl font-bold text-pink-950 mb-2">
+            Cat Not Found
+          </h2>
           <p className="text-gray-600 text-sm mb-4">
             The cat post you are looking for does not exist or has been removed.
           </p>
@@ -91,14 +93,12 @@ export default function CatDetailsPage({
     phone: post.contact_number || null,
   };
 
-
   const isAdopted = post.type === "ADOPTION" && post.status === "CLOSED";
   const isRescued = post.type === "RESCUE" && post.status === "CLOSED";
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-2xl my-6 space-y-5">
-        
         <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40 transition-all">
           <div className="h-2.5 w-full bg-linear-to-r from-pink-400 via-purple-400 to-pink-500" />
 
@@ -112,15 +112,33 @@ export default function CatDetailsPage({
             </button>
 
             <div className="flex items-center gap-2">
-              <HeaderFavoriteButton 
-              postId={String(post.id)} 
-              initialFavorite={Boolean(post.is_liked)}
+              <HeaderFavoriteButton
+                postId={String(post.id)}
+                initialFavorite={Boolean(post.is_liked)}
               />
-              <OptionsMenu 
-              postId={String(post.id)}
-              ownerId={post.user?.id}
-              postType="normal"
-             />
+
+              <OptionsMenu
+                postId={String(post.id)}
+                ownerId={post.user?.id}
+                postType={
+                  post.type === "ADOPTION"
+                    ? "adoption"
+                    : post.type === "RESCUE"
+                      ? "rescue"
+                      : "normal"
+                }
+                isDone={post.status === "CLOSED"}
+                onToggleStatus={(newStatus) => {
+                  setPost((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          status: newStatus ? "CLOSED" : "ACTIVE",
+                        }
+                      : prev,
+                  );
+                }}
+              />
             </div>
           </div>
 
@@ -138,10 +156,11 @@ export default function CatDetailsPage({
           </div>
         </div>
 
-        <CommentsSection postId={String(post.id)} postAuthorId={post.user?.id} /> 
-
+        <CommentsSection
+          postId={String(post.id)}
+          postAuthorId={post.user?.id}
+        />
       </div>
     </div>
   );
 }
-
